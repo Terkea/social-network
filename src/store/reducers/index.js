@@ -1,9 +1,11 @@
 import { combineReducers } from "redux";
 import user from "./user";
+import posts from "./posts";
 
 const allReducers = combineReducers({
   //reducers
   user,
+  posts,
 });
 
 export default allReducers;

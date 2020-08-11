@@ -14,3 +14,7 @@ export const UPDATE_PASSWORD_SUCCESS = "UPDATE_PASSWORD_SUCCESS";
 export const UPDATE_PASSWORD_FAIL = "UPDATE_PASSWORD_FAIL";
 
 export const LOGOUT = "LOGOUT";
+
+// posts reducer
+
+export const GET_ALL_POSTS = "GET_ALL_POSTS"

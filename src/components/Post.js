@@ -8,6 +8,7 @@ import {
   Divider,
   Input,
   Tooltip,
+  Button,
 } from "antd";
 import {
   EditOutlined,
@@ -17,14 +18,14 @@ import {
   CommentOutlined,
   SendOutlined,
 } from "@ant-design/icons";
-import { Link } from "react-router-dom";
 
-const { Title, Text, Paragraph } = Typography;
+const { Text, Paragraph } = Typography;
 
 const Post = (props) => {
   return (
     <Card
-      style={{ width: 614 }}
+      hoverable
+      style={{ width: 614, marginTop: "20px" }}
       cover={
         <img
           alt="example"
@@ -56,7 +57,15 @@ const Post = (props) => {
       </Row>
       <Divider />
       <Row>
-        <Input placeholder="Add a comment…" suffix={<SendOutlined />} />
+        <Input
+          bordered={false}
+          placeholder="Add a comment…"
+          suffix={
+            <Button>
+              <SendOutlined />
+            </Button>
+          }
+        />
       </Row>
     </Card>
   );

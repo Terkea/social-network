@@ -1,11 +1,20 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { connect } from "react-redux";
+import * as actions from "../store/actions/posts";
+
 import { Row, Col } from "antd";
 import MyProfile from "./MyProfile";
 import Post from "./Post";
 
 const Home = (props) => {
+  // const [posts, setPosts] = useState([]);
+  // const { fetchPosts } = props;
+
+  useEffect(() => {
+    props.fetchPosts();
+  }, []);
+
   return (
     <Row align="center">
       <Col align="center" span={14}>
@@ -20,10 +29,16 @@ const Home = (props) => {
 
 const mapStateToProps = (state) => {
   return {
-    loading: state.user.loading,
-    error: state.user.error,
-    payload: state.user.payload,
+    loading: state.posts.loading,
+    error: state.posts.error,
+    posts: state.posts.payload,
   };
 };
 
-export default connect(mapStateToProps, null)(Home);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    fetchPosts: () => dispatch(actions.fetchPosts()),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
