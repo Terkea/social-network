@@ -1,16 +1,19 @@
 import React from "react";
 
 import { connect } from "react-redux";
+import { Row, Col } from "antd";
+import MyProfile from "./MyProfile";
 
 const Home = (props) => {
   return (
-    <div>
-      {props.payload ? (
-        <b>Hi {props.payload.user.email}</b>
-      ) : (
-        "Never seen you before"
-      )}
-    </div>
+    <Row align="center">
+      <Col span={14} style={{ backgroundColor: "red" }}>
+        <p>test</p>
+      </Col>
+      <Col style={{ marginLeft: "20px" }} span={6}>
+        <MyProfile />
+      </Col>
+    </Row>
   );
 };
 

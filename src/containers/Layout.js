@@ -29,16 +29,11 @@ const CustomLayout = (props) => {
           )}
 
           {/* AUTH ROUTES */}
-          {props.isAuthenticated === true ? (
-            <Menu.Item key="/my_profile">
-              <Link to="/my_profile">My profile</Link>
-            </Menu.Item>
-          ) : null}
-          {props.isAuthenticated === true ? (
+          {/* {props.isAuthenticated === true ? (
             <Menu.Item key="/logout">
               <Link to="/logout">Logout</Link>
             </Menu.Item>
-          ) : null}
+          ) : null} */}
         </Menu>
       </Header>
       <Content style={{ padding: "0 10px", height: "86vh" }}>

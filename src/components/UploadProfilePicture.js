@@ -11,7 +11,7 @@ import { connect } from "react-redux";
 import * as actions from "../store/actions/user";
 import { Link } from "react-router-dom";
 
-const { Title } = Typography;
+const { Text } = Typography;
 const UploadProfilePicture = (props) => {
   const [fileList, updateFileList] = useState([]);
 
@@ -42,9 +42,9 @@ const UploadProfilePicture = (props) => {
   return (
     <ImgCrop rotate>
       <Upload customRequest={customUpload} {...options}>
-        <Title level={4}>
+        <Text level={4}>
           <Link to="#">Update profile picture</Link>
-        </Title>
+        </Text>
       </Upload>
     </ImgCrop>
   );

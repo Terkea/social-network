@@ -167,10 +167,12 @@ export const signInUser = (email, password, notificationCallback) => (
                 userProfile: { docId: doc.id, data: doc.data() },
               })
             );
-            notificationCallback(
-              `Welcome back ${data.user.displayName}`,
-              "SUCCESS"
-            );
+            if (data.user.displayName !== null) {
+              notificationCallback(
+                `Welcome back ${data.user.displayName}`,
+                "SUCCESS"
+              );
+            }
           });
         });
     })
@@ -289,6 +291,8 @@ export const updateProfile = (data, notificationCallback) => (dispatch) => {
                 {
                   // CUSTOM PROFILE
                   bio: data.bio,
+                  website: data.website,
+                  location: data.location,
                 },
                 { merge: true }
               );
@@ -396,6 +400,7 @@ export const forgottenPassword = (email, notificationCallback) => (
 export const updateProfilePicture = (photoURL, notificationCallback) => (
   dispatch
 ) => {
+  console.log("muie");
   const user = auth.currentUser;
   user
     .updateProfile({

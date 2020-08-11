@@ -1,16 +1,38 @@
 import React, { useEffect, useState } from "react";
 
-import { Input, Form, Row, Col, Typography, Avatar, Button, Modal } from "antd";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import {
+  Input,
+  Form,
+  Row,
+  Col,
+  Typography,
+  Avatar,
+  Modal,
+  Card,
+  Tooltip,
+  Button,
+} from "antd";
+import {
+  UserOutlined,
+  LockOutlined,
+  LogoutOutlined,
+  EditOutlined,
+  AimOutlined,
+  LinkOutlined,
+  CalendarOutlined,
+} from "@ant-design/icons";
 
 import { useHistory, Link } from "react-router-dom";
 import { connect } from "react-redux";
 import * as actions from "../store/actions/user";
+
+import dayjs from "dayjs";
+
 // import ChangePassword from "./CustomModal";
 import { runNotifications } from "../helpers/Notification";
 import UploadProfilePicture from "./UploadProfilePicture";
 
-const { Title, Text } = Typography;
+const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
 
 const MyProfile = (props) => {
@@ -24,7 +46,11 @@ const MyProfile = (props) => {
   const [avatar, setAvatar] = useState("");
   const [currentDisplayName, setCurrentDisplayName] = useState("");
   const [bio, setBio] = useState("");
+  const [location, setLocation] = useState("");
+  const [website, setWebsite] = useState("");
+  const [registrationDate, setRegistrationDate] = useState("");
   const [passwordModalVisibility, setPasswordModalVisibility] = useState(false);
+  const [profileModalVisibility, setProfileModalVisibility] = useState(false);
 
   const styles = {
     logo: {
@@ -51,6 +77,11 @@ const MyProfile = (props) => {
       setAvatar(props.payload.user.providerData[0].photoURL);
       setCurrentDisplayName(props.payload.user.providerData[0].displayName);
       setBio(props.payload.userProfile.data.bio);
+      setLocation(props.payload.userProfile.data.location);
+      setWebsite(props.payload.userProfile.data.website);
+      setRegistrationDate(
+        dayjs(props.payload.userProfile.data.createdAt).format("MMM YYYY")
+      );
 
       // console.log(props.payload.userProfile.bio);
 
@@ -59,16 +90,22 @@ const MyProfile = (props) => {
         newEmail: currentEmail,
         displayName: currentDisplayName,
         bio: bio,
+        website: website,
+        location: location,
       });
     } catch (error) {}
   }, [
     currentDisplayName,
     currentEmail,
     form,
+    form2,
     history,
     props.isAuthenticated,
     props.payload,
     bio,
+    location,
+    website,
+    registrationDate,
   ]);
 
   const onFinish = (values) => {
@@ -80,17 +117,24 @@ const MyProfile = (props) => {
         password: values.current_password,
         photoURL: values.photoURL,
         bio: values.bio,
+        website: values.website,
+        location: values.location,
         docId: props.payload.userProfile.docId,
       },
       runNotifications
     );
+    setProfileModalVisibility(false);
   };
 
-  const onOkModal = () => {
+  const onOkModalPassword = () => {
     form2.submit();
   };
 
-  const onFinishModals = (values) => {
+  const onOkModalProfile = () => {
+    form.submit();
+  };
+
+  const onFinishModalPassword = (values) => {
     props.updateUserPassword(
       {
         email: props.payload.user.email,
@@ -102,15 +146,19 @@ const MyProfile = (props) => {
     setPasswordModalVisibility(false);
   };
 
+  const logoutOnClick = (e) => {
+    e.preventDefault();
+    history.push("/logout");
+  };
+
   return (
-    <Row justify="center" style={styles.mainRow}>
+    <Row>
       <Modal
         title="Change password"
         visible={passwordModalVisibility}
-        onOk={onOkModal}
+        onOk={onOkModalPassword}
         onCancel={() => {
           setPasswordModalVisibility(false);
-          console.log("Something is fucked");
         }}
       >
         <LockOutlined style={styles.logo} />
@@ -120,10 +168,9 @@ const MyProfile = (props) => {
         </Text>
         <Form
           style={{ marginTop: "20px" }}
-          name="normal_login"
-          className="login-form"
+          name="password"
           initialValues={{ remember: true }}
-          onFinish={onFinishModals}
+          onFinish={onFinishModalPassword}
           form={form2}
         >
           <Form.Item
@@ -181,115 +228,180 @@ const MyProfile = (props) => {
         </Form>
       </Modal>
 
-      <Col md={14} xs={24}>
-        <Row align="center">
-          <Avatar
-            align="middle"
-            src={avatar}
-            size={256}
-            icon={<UserOutlined />}
-          />
-        </Row>
-        <Row style={{ marginTop: "20px" }} align="center">
-          <UploadProfilePicture />
-        </Row>
-        <Title
-          style={{ marginBottom: "30px", marginTop: "30px", maxHeight: "20px" }}
-          align="center"
-          level={4}
-        ></Title>
-        <Row align="center">
-          <Col md={4} xs={0}>
-            <Title level={4}>Display name</Title>
-            <Title level={4}>E-mail</Title>
-            <Title level={4}>Current password</Title>
-            <Title level={4}>Bio</Title>
-          </Col>
+      <Modal
+        forceRender
+        title="Update profile"
+        visible={profileModalVisibility}
+        onOk={onOkModalProfile}
+        onCancel={() => {
+          setProfileModalVisibility(false);
+        }}
+      >
+        <Form
+          name="profile"
+          initialValues={{
+            remember: true,
+          }}
+          onFinish={onFinish}
+          form={form}
+        >
+          <Form.Item
+            label="Display name"
+            name="displayName"
+            rules={[
+              {
+                required: true,
+                message: "Please input your display name!",
+              },
+            ]}
+          >
+            <Input prefix={<UserOutlined className="site-form-item-icon" />} />
+          </Form.Item>
 
-          <Col style={{ marginLeft: "10px" }} md={8}>
-            <Form
-              form={form}
-              name="normal_login"
-              className="login-form"
-              initialValues={{
-                remember: true,
-              }}
-              onFinish={onFinish}
-            >
-              <Form.Item
-                name="displayName"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input your display name!",
-                  },
-                ]}
-              >
-                <Input
-                  prefix={<UserOutlined className="site-form-item-icon" />}
-                />
-              </Form.Item>
+          <Form.Item
+            label="E-mail address"
+            name="newEmail"
+            rules={[{ required: false, message: "Please input your E-mail!" }]}
+          >
+            <Input prefix={<UserOutlined className="site-form-item-icon" />} />
+          </Form.Item>
 
-              <Form.Item
-                name="newEmail"
-                rules={[
-                  { required: false, message: "Please input your E-mail!" },
-                ]}
-              >
-                <Input
-                  prefix={<UserOutlined className="site-form-item-icon" />}
-                />
-              </Form.Item>
+          <Form.Item
+            label="Website"
+            name="website"
+            rules={[
+              {
+                required: false,
+                message: "Please input your website!",
+              },
+            ]}
+          >
+            <Input prefix={<LinkOutlined className="site-form-item-icon" />} />
+          </Form.Item>
 
-              <Form.Item
-                name="current_password"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input your current password!",
-                  },
-                ]}
-              >
-                <Input.Password
-                  prefix={<LockOutlined className="site-form-item-icon" />}
-                />
-              </Form.Item>
+          <Form.Item
+            label="Location"
+            name="location"
+            rules={[
+              {
+                required: false,
+                message: "Please input your location!",
+              },
+            ]}
+          >
+            <Input prefix={<LinkOutlined className="site-form-item-icon" />} />
+          </Form.Item>
 
-              <Form.Item
-                name="bio"
-                rules={[
-                  {
-                    required: false,
-                    message: "Please input your bio!",
-                  },
-                ]}
-              >
-                <TextArea autoSize={{ minRows: 2, maxRows: 2 }} />
-              </Form.Item>
+          <Form.Item
+            label="Bio"
+            name="bio"
+            rules={[
+              {
+                required: false,
+                message: "Please input your bio!",
+              },
+            ]}
+          >
+            <TextArea autoSize={{ minRows: 2, maxRows: 4 }} />
+          </Form.Item>
+          <Form.Item
+            label="Current password"
+            name="current_password"
+            rules={[
+              {
+                required: true,
+                message: "Please input your current password!",
+              },
+            ]}
+          >
+            <Input.Password
+              prefix={<LockOutlined className="site-form-item-icon" />}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
 
-              <Row align="middle">
-                <Col span={12}>
-                  <Button type="primary" htmlType="submit">
-                    Update profile
-                  </Button>
-                </Col>
-                <Col span={12} align="end">
-                  <Link
-                    to="#"
-                    // style={{ marginLeft: "10px", width: "100%" }}
-                    onClick={() => {
-                      setPasswordModalVisibility(true);
-                    }}
-                    type="primary"
-                  >
-                    Change password
-                  </Link>
-                </Col>
-              </Row>
-            </Form>
-          </Col>
-        </Row>
-      </Col>
+      <Card
+        style={{ width: "100%" }}
+        hoverable
+        actions={[
+          <Tooltip title="Log out">
+            <LogoutOutlined onClick={logoutOnClick} key="logout" />
+          </Tooltip>,
+          <Tooltip
+            onClick={() => {
+              setProfileModalVisibility(true);
+            }}
+            title="Edit profile"
+          >
+            <EditOutlined key="edit" />
+          </Tooltip>,
+          <Tooltip
+            onClick={() => {
+              setPasswordModalVisibility(true);
+            }}
+            title="Update password"
+          >
+            <LockOutlined key="ellipsis" />
+          </Tooltip>,
+        ]}
+      >
+        <Col span={24}>
+          <Row align="center">
+            <Avatar
+              align="middle"
+              src={avatar}
+              size={256}
+              icon={<UserOutlined />}
+            />
+          </Row>
+          <Row style={{ marginTop: "20px" }} align="center">
+            <UploadProfilePicture />
+          </Row>
+          <Title
+            style={{
+              marginBottom: "30px",
+              marginTop: "30px",
+              maxHeight: "20px",
+            }}
+            align="center"
+            level={4}
+          ></Title>
+          <Row>
+            <Col span={24}>
+              <Title strong align="center" level={4}>
+                {currentDisplayName === "" ? "unknown" : currentDisplayName}
+              </Title>
+              {location === "" ? null : (
+                <Paragraph align="center" level={4}>
+                  {bio}
+                </Paragraph>
+              )}
+
+              {location === "" ? null : (
+                <Paragraph align="center" level={4}>
+                  <AimOutlined />
+                  &nbsp;{location}
+                </Paragraph>
+              )}
+
+              {website === "" ? null : (
+                <Paragraph align="center" level={4}>
+                  <LinkOutlined />
+                  &nbsp;<Link to="">{website}</Link>
+                </Paragraph>
+              )}
+
+              {registrationDate === "" ? null : (
+                <Paragraph align="center" level={4}>
+                  <CalendarOutlined />
+                  &nbsp; Joined {registrationDate}
+                </Paragraph>
+              )}
+            </Col>
+          </Row>
+        </Col>
+      </Card>
     </Row>
   );
 };
