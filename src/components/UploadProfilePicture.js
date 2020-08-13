@@ -5,15 +5,15 @@ import ImgCrop from "antd-img-crop";
 import { runNotifications } from "../helpers/Notification";
 
 import uuid from "react-uuid";
-import { storage } from "../firebase";
+import { storage } from "../createStore";
 
-import { connect } from "react-redux";
-import * as actions from "../store/actions/user";
 import { Link } from "react-router-dom";
+import { useFirebase } from "react-redux-firebase";
 
-const { Text } = Typography;
+const { Title } = Typography;
 const UploadProfilePicture = (props) => {
   const [fileList, updateFileList] = useState([]);
+  const firebase = useFirebase();
 
   const customUpload = ({ onError, onSuccess, file }) => {
     const metadata = {
@@ -25,7 +25,11 @@ const UploadProfilePicture = (props) => {
     try {
       const image = imgFile.put(file, metadata);
       onSuccess(null, image);
-      props.updateProfilePicture(`${imageName}.jpg`, runNotifications);
+      firebase
+        .updateProfile({
+          photoURL: `https://firebasestorage.googleapis.com/v0/b/${process.env.REACT_APP_STORAGE_BUCKET}/o/avatar%2F${imageName}.jpg?alt=media`,
+        })
+        .then(() => runNotifications("Profile image updated", "SUCCESS"));
     } catch (e) {
       onError(e);
     }
@@ -42,19 +46,12 @@ const UploadProfilePicture = (props) => {
   return (
     <ImgCrop rotate>
       <Upload customRequest={customUpload} {...options}>
-        <Text level={4}>
+        <Title level={4}>
           <Link to="#">Update profile picture</Link>
-        </Text>
+        </Title>
       </Upload>
     </ImgCrop>
   );
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    updateProfilePicture: (url, callback) =>
-      dispatch(actions.updateProfilePicture(url, callback)),
-  };
-};
-
-export default connect(null, mapDispatchToProps)(UploadProfilePicture);
+export default UploadProfilePicture;

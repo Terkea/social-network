@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { withRouter, useHistory, Link } from "react-router-dom";
-import { connect } from "react-redux";
-import * as actions from "../store/actions/user";
+import {  useHistory, Link } from "react-router-dom";
 
 import {
   Row,
@@ -17,6 +15,8 @@ import { LockOutlined, RocketOutlined, MailOutlined } from "@ant-design/icons";
 
 import SvgBackground from "../containers/SvgBackground";
 import { runNotifications } from "../helpers/Notification";
+import { useFirebase } from "react-redux-firebase";
+import { connect } from "react-redux";
 
 const { Title, Text } = Typography;
 
@@ -36,15 +36,16 @@ const styles = {
 };
 
 const Login = (props) => {
+  const firebase = useFirebase();
   const [modalVisibility, setModalVisibility] = useState(false);
   const [form] = Form.useForm();
   const history = useHistory();
-  // Check if the user is authenticated
+
   useEffect(() => {
-    if (props.isAuthenticated) {
-      history.push("/");
+    if (props.authError) {
+      runNotifications(props.authError.message, "ERROR");
     }
-  });
+  }, [props.authError]);
 
   // E-mail autocomplete
   const [autoCompleteResult, setAutoCompleteResult] = useState([]);
@@ -71,13 +72,19 @@ const Login = (props) => {
   };
 
   const onFinishModals = (values) => {
-    // console.log(values);
-    props.forgottenPassword(values.forgottenEmail, runNotifications);
-    setModalVisibility(false);
+    firebase.resetPassword(values.forgottenEmail).then(() => {
+      runNotifications(
+        `Thanks! Please check ${values.forgottenEmail} for a link to reset your password.`,
+        "SUCCESS"
+      );
+    });
   };
 
   const onFinish = (values) => {
-    props.signInUser(values.email, values.password, runNotifications);
+    console.log(values);
+    firebase
+      .login({ email: values.email, password: values.password })
+      .then(() => history.push("/"));
   };
 
   return (
@@ -190,32 +197,17 @@ const Login = (props) => {
               </Link>
             </Form.Item>
           </Form>
-
-          {/* error handling */}
-          {/* {props.error ? <Text type="danger">{props.error}</Text> : null} */}
         </Col>
       </Row>
     </SvgBackground>
   );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    loading: state.user.loading,
-    error: state.user.error,
-    payload: state.user.payload,
-    isAuthenticated: state.user.isAuthenticated,
-  };
-};
+const enhance = connect(
+  // Map redux state to component props
+  ({ firebase: { authError } }) => ({
+    authError,
+  })
+);
 
-const mapDispatchToProps = (dispatch) => {
-  //
-  return {
-    signInUser: (email, password, callback) =>
-      dispatch(actions.signInUser(email, password, callback)),
-    forgottenPassword: (email, callback) =>
-      dispatch(actions.forgottenPassword(email, callback)),
-  };
-};
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Login));
+export default enhance(Login);
