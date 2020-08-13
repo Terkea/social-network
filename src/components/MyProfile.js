@@ -10,7 +10,6 @@ import {
   Modal,
   Card,
   Tooltip,
-  Button,
 } from "antd";
 import {
   UserOutlined,
@@ -21,8 +20,6 @@ import {
   LinkOutlined,
   CalendarOutlined,
 } from "@ant-design/icons";
-
-import { useHistory } from "react-router-dom";
 
 import dayjs from "dayjs";
 
@@ -44,23 +41,13 @@ const MyProfile = (props) => {
   // https://stackoverflow.com/a/62855456/8193864
 
   const [form] = Form.useForm();
-
+  const [avatar, setAvatar] = useState();
   const [profileModalVisibility, setProfileModalVisibility] = useState(false);
 
-  const styles = {
-    logo: {
-      fontSize: "100px",
-      width: "100%",
-      marginBottom: "30px",
-    },
-    mainRow: {
-      height: "50vh",
-      paddingTop: "30px",
-    },
-  };
-
-  const history = useHistory();
   useEffect(() => {
+    setAvatar(
+      `https://firebasestorage.googleapis.com/v0/b/${process.env.REACT_APP_STORAGE_BUCKET}/o/avatar%2F${profile.photoURL}?alt=media`
+    );
     // Set up the default values for the inputs
     form.setFieldsValue({
       newEmail: profile.email,
@@ -81,7 +68,7 @@ const MyProfile = (props) => {
     profile.location,
     profile.website,
     profile.createdAt,
-    // profile.photoURL,
+    profile.photoURL,
     props.authError,
   ]);
 
@@ -217,7 +204,7 @@ const MyProfile = (props) => {
           <Row align="center">
             <Avatar
               align="middle"
-              src={profile.photoURL}
+              src={avatar}
               size={256}
               icon={<UserOutlined />}
             />

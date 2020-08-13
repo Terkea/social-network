@@ -1,14 +1,13 @@
 import React from "react";
 import { Layout, Menu } from "antd";
 import { Link } from "react-router-dom";
-import { useFirebase, isEmpty } from "react-redux-firebase";
+import { isEmpty } from "react-redux-firebase";
 import { useSelector } from "react-redux";
 
 const { Header, Content, Footer } = Layout;
 
 const CustomLayout = (props) => {
   const auth = useSelector((state) => state.firebase.auth);
-  const firebase = useFirebase();
 
   return (
     <Layout className="layout">

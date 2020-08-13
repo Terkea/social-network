@@ -24,12 +24,14 @@ const UploadProfilePicture = (props) => {
     const imgFile = storageRef.child(`avatar/${imageName}.jpg`);
     try {
       const image = imgFile.put(file, metadata);
-      onSuccess(null, image);
-      firebase
-        .updateProfile({
-          photoURL: `https://firebasestorage.googleapis.com/v0/b/${process.env.REACT_APP_STORAGE_BUCKET}/o/avatar%2F${imageName}.jpg?alt=media`,
-        })
-        .then(() => runNotifications("Profile image updated", "SUCCESS"));
+      image.then((snapshot) => {
+        onSuccess(null, image);
+        firebase
+          .updateProfile({
+            photoURL: `${imageName}.jpg`,
+          })
+          .then(() => runNotifications("Profile image updated", "SUCCESS"));
+      });
     } catch (e) {
       onError(e);
     }

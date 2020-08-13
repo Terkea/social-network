@@ -1,11 +1,10 @@
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import React, { useEffect } from "react";
+import React from "react";
 
 import Home from "./components/Home";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import CustomLayout from "./containers/Layout";
-import MyProfile from "./components/MyProfile";
 
 import "antd/dist/antd.less"; // or 'antd/dist/antd.less'
 import "./App.css";
@@ -16,7 +15,6 @@ import { ReactReduxFirebaseProvider } from "react-redux-firebase";
 import { store, rrfProps } from "./createStore";
 
 const App = (props) => {
-
   return (
     <Provider store={store}>
       <ReactReduxFirebaseProvider {...rrfProps}>

@@ -36,7 +36,7 @@ const Post = (props) => {
       <Row align="middle">
         <Avatar
           size={40}
-          src="https://firebasestorage.googleapis.com/v0/b/social-network-32715.appspot.com/o/avatar%2F7a8a684-c177-bbde-5a74-5510b3f218.jpg?alt=media&token=c2b8f899-8dd7-4c3b-a870-4413852acaf2"
+          src="https://firebasestorage.googleapis.com/v0/b/social-network-32715.appspot.com/o/83650987_1369063819931303_452346978dsa2464331776_o.jpg?alt=media&token=cf59f9e2-6e3a-43f8-b841-6686560cef25"
         />
         <Text strong>&nbsp;&nbsp; Georgica</Text>
         <Text>&nbsp;&nbsp; 1 hour ago</Text>
