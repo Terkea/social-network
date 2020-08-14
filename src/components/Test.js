@@ -39,9 +39,8 @@ const Test = () => {
     commentCount: 9,
     description: "muie",
     id: "YfQRYe7EPScpdjIAJXky",
-    // imageURL: gothAss,
     imageURL:
-      "https://www.ox.ac.uk/sites/files/oxford/styles/ow_medium_feature/public/field/field_image_main/forest.jpg?itok=X7dckG0T",
+      "https://firebasestorage.googleapis.com/v0/b/social-network-32715.appspot.com/o/avatar%2Fb47d2dd-d45f-0ace-5685-372bc1407dd.jpg?alt=media&token=485f18f4-377c-4e50-9e92-55af8a670554",
     likeCount: 7,
     profilePicture:
       "https://firebasestorage.googleapis.com/v0/b/social-network-32715.appspot.com/o/avatar%2Fa303c26-46c6-4154-0247-5f6fb7774fe.jpg?alt=media&token=ad547c20-c237-413f-9a55-86cdaf53235a",

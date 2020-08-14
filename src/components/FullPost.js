@@ -130,18 +130,22 @@ const Post = (props) => {
     >
       <Row>
         {/* LEFT SIDE */}
-        <Col md={15} xs={24}>
+        <Col md={16} xs={24}>
           <img
             alt="Sex"
             // src="https://firebasestorage.googleapis.com/v0/b/changemymind-ce330.appspot.com/o/no-img.jpg?alt=media"
             src={props.data.imageURL}
-            style={{ objectFit: "fit", width: "100%", height: "100%" }}
+            style={{
+              objectFit: "contain",
+              width: "100%",
+              height: "100%",
+            }}
           />
         </Col>
         {/* RIGHT SIDE */}
-        <Col style={{ marginLeft: "20px" }} md={8} xs={24}>
+        <Col md={8} xs={24}>
           {/* POST DATA */}
-          <Row style={{ alignItems: "flex-end" }}>
+          <Row style={{ alignItems: "flex-end", marginLeft: "10px" }}>
             <Avatar size={40} src={props.data.profilePicture} />
             <Title level={4} strong style={{ marginLeft: "10px" }}>
               {props.data.userName}
@@ -158,7 +162,7 @@ const Post = (props) => {
             )}
           </Row>
           {/* DESCRIPTION */}
-          <Row>
+          <Row style={{ marginLeft: "10px" }}>
             {props.data.userId === auth.uid ? (
               <Paragraph
                 editable={{ onChange: onChange }}
@@ -184,22 +188,24 @@ const Post = (props) => {
               </Paragraph>
             )}
           </Row>
-          <Divider />
+          {/* <Divider /> */}
 
           {/* COMMENTS */}
 
           <Row
             style={{
-              height: `${pictureWidth}px`,
+              height: `${280}px`,
               overflowY: "scroll",
               scrollbarWidth: "none",
+              marginLeft: "10px",
             }}
           >
             <Comment
-              style={{ marginTop: "10px" }}
+              style={{ paddingTop: "12px" }}
               data={{
                 timestamp: "2020-08-14T06:05:44.498Z",
-                comment: "test",
+                comment:
+                  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of L",
                 userName: "Oops",
                 userImage:
                   "https://firebasestorage.googleapis.com/v0/b/social-network-32715.appspot.com/o/avatar%2F648f71-d4b7-d433-7fed-3b51a2804ce.jpg?alt=media",
