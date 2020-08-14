@@ -1,13 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Card,
   Avatar,
   Row,
-  Col,
   Typography,
   Divider,
   Input,
-  Tooltip,
   Button,
   Form,
 } from "antd";
@@ -23,12 +21,9 @@ import {
   useFirestoreConnect,
   isLoaded,
   isEmpty,
-  useFirebase,
   useFirestore,
-  firestoreConnect,
 } from "react-redux-firebase";
-import { useSelector, connect } from "react-redux";
-import { compose } from "redux";
+import { useSelector } from "react-redux";
 
 const { Text, Paragraph } = Typography;
 
@@ -116,7 +111,7 @@ const Post = (props) => {
   return (
     <Card
       hoverable
-      style={{ width: 614, marginTop: "20px" }}
+      style={{ maxWidth: 614, marginTop: "20px" }}
       cover={
         <img
           alt="example"
@@ -175,43 +170,31 @@ const Post = (props) => {
         <CommentOutlined style={{ fontSize: "25px", marginLeft: "20px" }} />
         <Text>&nbsp;{props.data.commentCount} comments</Text>
       </Row>
-      <Divider />
-      <Row>
-        <Form
-          form={form}
-          style={{ width: "100%" }}
-          name="basic"
-          onFinish={onFinishComment}
-        >
-          <Form.Item name="comment" rules={[{ required: false }]}>
-            <Input
-              bordered={false}
-              // onPressEnter={() => form.submit()}
-              placeholder="Add a comment…"
-              suffix={
-                <Button onClick={() => form.submit()}>
-                  <SendOutlined />
-                </Button>
-              }
-            />
-          </Form.Item>
-        </Form>
-      </Row>
+      {isLoaded(auth) && !isEmpty(auth) ? <Divider /> : null}
+      {isLoaded(auth) && !isEmpty(auth) ? (
+        <Row>
+          <Form
+            form={form}
+            style={{ width: "100%" }}
+            name="basic"
+            onFinish={onFinishComment}
+          >
+            <Form.Item name="comment" rules={[{ required: false }]}>
+              <Input
+                bordered={false}
+                placeholder="Add a comment…"
+                suffix={
+                  <Button onClick={() => form.submit()}>
+                    <SendOutlined />
+                  </Button>
+                }
+              />
+            </Form.Item>
+          </Form>
+        </Row>
+      ) : null}
     </Card>
   );
 };
 
 export default Post;
-//   compose(
-//   firestoreConnect({
-//     collection: "likes",
-//     where: [
-//       ["postId", "==", props.data.id],
-//       ["userId", "==", auth.uid],
-//     ],
-//     storeAs: `checkLike`,
-//   }),
-//   connect((state, props) => ({
-//     checkLike: state.firestore.data.checkLike,
-//   }))
-// )(Post);

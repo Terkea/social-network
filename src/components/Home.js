@@ -25,7 +25,7 @@ const Home = (props) => {
     <>
       {isEmpty(auth) ? (
         <Row align="center">
-          <Col align="center" span={14}>
+          <Col align="center" md={14} xs={24}>
             {isLoaded(posts) ? (
               posts.map((post) => {
                 return <Post data={post} />;
@@ -37,7 +37,10 @@ const Home = (props) => {
         </Row>
       ) : (
         <Row align="center">
-          <Col align="center" span={14}>
+          <Col md={6} xs={24}>
+            <MyProfile />
+          </Col>
+          <Col align="center" md={14} xs={24}>
             <p>TODO: create post</p>
             {isLoaded(posts) ? (
               posts.map((post) => {
@@ -46,9 +49,6 @@ const Home = (props) => {
             ) : (
               <p>loading...</p>
             )}
-          </Col>
-          <Col style={{ marginLeft: "20px" }} span={6}>
-            <MyProfile />
           </Col>
         </Row>
       )}
