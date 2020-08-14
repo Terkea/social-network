@@ -13,6 +13,7 @@ import { Provider } from "react-redux";
 import { ReactReduxFirebaseProvider } from "react-redux-firebase";
 
 import { store, rrfProps } from "./createStore";
+import Test from "./components/Test";
 
 const App = (props) => {
   return (
@@ -25,6 +26,7 @@ const App = (props) => {
 
             <CustomLayout {...props}>
               <Route exact path="/" component={Home} />
+              <Route exact path="/test" component={Test} />
             </CustomLayout>
           </Switch>
         </Router>
