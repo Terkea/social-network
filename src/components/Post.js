@@ -15,6 +15,7 @@ import {
   HeartOutlined,
   CommentOutlined,
   SendOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import {
@@ -23,8 +24,10 @@ import {
   isEmpty,
   useFirebase,
   useFirestore,
+  firestoreConnect,
 } from "react-redux-firebase";
-import { useSelector } from "react-redux";
+import { useSelector, connect } from "react-redux";
+import { compose } from "redux";
 
 const { Text, Paragraph } = Typography;
 
@@ -33,8 +36,6 @@ const Post = (props) => {
   const firestore = useFirestore();
   const auth = useSelector((state) => state.firebase.auth);
   const checkLike = useSelector((state) => state.firestore.data.checkLike);
-
-  // console.log(checkLike);
 
   useFirestoreConnect([
     {
@@ -77,6 +78,18 @@ const Post = (props) => {
     }
   };
 
+  const onChange = (str) => {
+    console.log(str);
+    firestore
+      .collection("posts")
+      .doc(props.data.id)
+      .update({ description: str });
+  };
+
+  const deletePost = () => {
+    firestore.collection("posts").doc(props.data.id).delete();
+  };
+
   return (
     <Card
       hoverable
@@ -95,11 +108,37 @@ const Post = (props) => {
         <Text>
           &nbsp;&nbsp; {dayjs(props.data.timestamp).format("MMM YYYY")}
         </Text>
+        {props.data.userId === auth.uid ? (
+          <Button style={{ border: "none" }} onClick={deletePost}>
+            <DeleteOutlined />
+          </Button>
+        ) : null}
       </Row>
       <Row>
-        <Paragraph style={{ marginTop: "20px", textAlign: "left" }}>
-          {props.data.description}
-        </Paragraph>
+        {props.data.userId === auth.uid ? (
+          <Paragraph
+            editable={{ onChange: onChange }}
+            style={{
+              marginTop: "20px",
+              textAlign: "left",
+              width: "100%",
+              marginBottom: "20px",
+            }}
+          >
+            {props.data.description}
+          </Paragraph>
+        ) : (
+          <Paragraph
+            style={{
+              marginTop: "20px",
+              textAlign: "left",
+              width: "100%",
+              marginBottom: "20px",
+            }}
+          >
+            {props.data.description}
+          </Paragraph>
+        )}
       </Row>
       <Row align="middle">
         <Button style={{ border: "none" }} onClick={likePost}>
@@ -131,3 +170,16 @@ const Post = (props) => {
 };
 
 export default Post;
+//   compose(
+//   firestoreConnect({
+//     collection: "likes",
+//     where: [
+//       ["postId", "==", props.data.id],
+//       ["userId", "==", auth.uid],
+//     ],
+//     storeAs: `checkLike`,
+//   }),
+//   connect((state, props) => ({
+//     checkLike: state.firestore.data.checkLike,
+//   }))
+// )(Post);
