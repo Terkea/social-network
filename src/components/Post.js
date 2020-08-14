@@ -17,17 +17,77 @@ import {
   SendOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
+import {
+  useFirestoreConnect,
+  isLoaded,
+  isEmpty,
+  useFirebase,
+  useFirestore,
+} from "react-redux-firebase";
+import { useSelector } from "react-redux";
 
 const { Text, Paragraph } = Typography;
 
 const Post = (props) => {
-  const [like, setLike] = useState(false);
-  console.log(props);
+  // const [like, setLike] = useState(false);
+  const firestore = useFirestore();
+  const auth = useSelector((state) => state.firebase.auth);
+  const checkLike = useSelector((state) => state.firestore.data.checkLike);
+
+  // console.log(checkLike);
+
+  useFirestoreConnect([
+    {
+      collection: "likes",
+      where: [
+        ["postId", "==", props.data.id],
+        ["userId", "==", auth.uid],
+      ],
+      storeAs: `checkLike`,
+    },
+  ]);
+
+  // check if the post is liked or not
+  // act accordingly
+  // TODO add notification to the post owner
+  const likePost = () => {
+    if (isLoaded(checkLike) && isEmpty(checkLike)) {
+      firestore
+        .collection("likes")
+        .add({ postId: props.data.id, userId: auth.uid })
+        .then(() => {
+          firestore
+            .collection("posts")
+            .doc(props.data.id)
+            .update({ likeCount: props.data.likeCount + 1 });
+        });
+    }
+
+    if (isLoaded(checkLike) && !isEmpty(checkLike)) {
+      firestore
+        .collection("likes")
+        .doc(Object.keys(checkLike)[0])
+        .delete()
+        .then(() => {
+          firestore
+            .collection("posts")
+            .doc(props.data.id)
+            .update({ likeCount: props.data.likeCount - 1 });
+        });
+    }
+  };
+
   return (
     <Card
       hoverable
       style={{ width: 614, marginTop: "20px" }}
-      cover={<img alt="example" src={props.data.imageURL} />}
+      cover={
+        <img
+          alt="example"
+          src={props.data.imageURL}
+          onClick={() => console.log(props.data.id)}
+        />
+      }
     >
       <Row align="middle">
         <Avatar size={40} src={props.data.profilePicture} />
@@ -42,8 +102,8 @@ const Post = (props) => {
         </Paragraph>
       </Row>
       <Row align="middle">
-        <Button style={{ border: "none" }} onClick={() => setLike(!like)}>
-          {like ? (
+        <Button style={{ border: "none" }} onClick={likePost}>
+          {!isEmpty(checkLike) ? (
             <HeartFilled style={{ fontSize: "25px" }} />
           ) : (
             <HeartOutlined style={{ fontSize: "25px" }} />
@@ -57,7 +117,7 @@ const Post = (props) => {
       <Row>
         <Input
           bordered={false}
-          onPressEnter={console.log("click")}
+          // onPressEnter={console.log("click")}
           placeholder="Add a comment…"
           suffix={
             <Button>
