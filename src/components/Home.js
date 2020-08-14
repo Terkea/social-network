@@ -38,6 +38,7 @@ const Home = (props) => {
       ) : (
         <Row align="center">
           <Col align="center" span={14}>
+            <p>TODO: create post</p>
             {isLoaded(posts) ? (
               posts.map((post) => {
                 return <Post data={post} key={post.id} />;

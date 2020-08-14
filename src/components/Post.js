@@ -9,6 +9,7 @@ import {
   Input,
   Tooltip,
   Button,
+  Form,
 } from "antd";
 import {
   HeartFilled,
@@ -32,9 +33,10 @@ import { compose } from "redux";
 const { Text, Paragraph } = Typography;
 
 const Post = (props) => {
-  // const [like, setLike] = useState(false);
+  const [form] = Form.useForm();
   const firestore = useFirestore();
   const auth = useSelector((state) => state.firebase.auth);
+  const profile = useSelector((state) => state.firebase.profile);
   const checkLike = useSelector((state) => state.firestore.data.checkLike);
 
   useFirestoreConnect([
@@ -42,7 +44,7 @@ const Post = (props) => {
       collection: "likes",
       where: [
         ["postId", "==", props.data.id],
-        ["userId", "==", auth.uid],
+        ["userId", "==", auth.uid || null],
       ],
       storeAs: `checkLike`,
     },
@@ -52,29 +54,31 @@ const Post = (props) => {
   // act accordingly
   // TODO add notification to the post owner
   const likePost = () => {
-    if (isLoaded(checkLike) && isEmpty(checkLike)) {
-      firestore
-        .collection("likes")
-        .add({ postId: props.data.id, userId: auth.uid })
-        .then(() => {
-          firestore
-            .collection("posts")
-            .doc(props.data.id)
-            .update({ likeCount: props.data.likeCount + 1 });
-        });
-    }
+    if (!isEmpty(auth) && isLoaded(auth)) {
+      if (isLoaded(checkLike) && isEmpty(checkLike)) {
+        firestore
+          .collection("likes")
+          .add({ postId: props.data.id, userId: auth.uid })
+          .then(() => {
+            firestore
+              .collection("posts")
+              .doc(props.data.id)
+              .update({ likeCount: props.data.likeCount + 1 });
+          });
+      }
 
-    if (isLoaded(checkLike) && !isEmpty(checkLike)) {
-      firestore
-        .collection("likes")
-        .doc(Object.keys(checkLike)[0])
-        .delete()
-        .then(() => {
-          firestore
-            .collection("posts")
-            .doc(props.data.id)
-            .update({ likeCount: props.data.likeCount - 1 });
-        });
+      if (isLoaded(checkLike) && !isEmpty(checkLike)) {
+        firestore
+          .collection("likes")
+          .doc(Object.keys(checkLike)[0])
+          .delete()
+          .then(() => {
+            firestore
+              .collection("posts")
+              .doc(props.data.id)
+              .update({ likeCount: props.data.likeCount - 1 });
+          });
+      }
     }
   };
 
@@ -88,6 +92,25 @@ const Post = (props) => {
 
   const deletePost = () => {
     firestore.collection("posts").doc(props.data.id).delete();
+  };
+
+  const onFinishComment = (values) => {
+    firestore
+      .collection("comments")
+      .add({
+        comment: values.comment,
+        createdAt: new Date().toISOString(),
+        postId: props.data.id,
+        userImage: profile.photoURL,
+        userId: auth.uid,
+      })
+      .then(() => {
+        form.resetFields();
+        firestore
+          .collection("posts")
+          .doc(props.data.id)
+          .update({ commentCount: props.data.commentCount + 1 });
+      });
   };
 
   return (
@@ -154,16 +177,25 @@ const Post = (props) => {
       </Row>
       <Divider />
       <Row>
-        <Input
-          bordered={false}
-          // onPressEnter={console.log("click")}
-          placeholder="Add a comment…"
-          suffix={
-            <Button>
-              <SendOutlined />
-            </Button>
-          }
-        />
+        <Form
+          form={form}
+          style={{ width: "100%" }}
+          name="basic"
+          onFinish={onFinishComment}
+        >
+          <Form.Item name="comment" rules={[{ required: false }]}>
+            <Input
+              bordered={false}
+              // onPressEnter={() => form.submit()}
+              placeholder="Add a comment…"
+              suffix={
+                <Button onClick={() => form.submit()}>
+                  <SendOutlined />
+                </Button>
+              }
+            />
+          </Form.Item>
+        </Form>
       </Row>
     </Card>
   );
