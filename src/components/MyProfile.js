@@ -41,13 +41,9 @@ const MyProfile = (props) => {
   // https://stackoverflow.com/a/62855456/8193864
 
   const [form] = Form.useForm();
-  const [avatar, setAvatar] = useState();
   const [profileModalVisibility, setProfileModalVisibility] = useState(false);
 
   useEffect(() => {
-    setAvatar(
-      `https://firebasestorage.googleapis.com/v0/b/${process.env.REACT_APP_STORAGE_BUCKET}/o/avatar%2F${profile.photoURL}?alt=media`
-    );
     // Set up the default values for the inputs
     form.setFieldsValue({
       newEmail: profile.email,
@@ -204,7 +200,7 @@ const MyProfile = (props) => {
           <Row align="center">
             <Avatar
               align="middle"
-              src={avatar}
+              src={profile.photoURL}
               size={256}
               icon={<UserOutlined />}
             />

@@ -1,6 +1,7 @@
 import firebase from "firebase/app";
 import "firebase/auth";
-import "firebase/firestore"; // <- needed if using firestore
+// import "firebase/database";
+import "firebase/firestore";
 import "firebase/storage"; // <- needed if using storage
 import { createStore, combineReducers } from "redux";
 import { firebaseReducer } from "react-redux-firebase";

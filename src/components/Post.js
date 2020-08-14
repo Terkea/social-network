@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   Avatar,
@@ -11,54 +11,53 @@ import {
   Button,
 } from "antd";
 import {
-  EditOutlined,
-  EllipsisOutlined,
-  SettingOutlined,
+  HeartFilled,
   HeartOutlined,
   CommentOutlined,
   SendOutlined,
 } from "@ant-design/icons";
+import dayjs from "dayjs";
 
 const { Text, Paragraph } = Typography;
 
 const Post = (props) => {
+  const [like, setLike] = useState(false);
+  console.log(props);
   return (
     <Card
       hoverable
       style={{ width: 614, marginTop: "20px" }}
-      cover={
-        <img
-          alt="example"
-          src="https://www.ox.ac.uk/sites/files/oxford/styles/ow_medium_feature/public/field/field_image_main/forest.jpg?itok=X7dckG0T"
-        />
-      }
+      cover={<img alt="example" src={props.data.imageURL} />}
     >
       <Row align="middle">
-        <Avatar
-          size={40}
-          src="https://firebasestorage.googleapis.com/v0/b/social-network-32715.appspot.com/o/83650987_1369063819931303_452346978dsa2464331776_o.jpg?alt=media&token=cf59f9e2-6e3a-43f8-b841-6686560cef25"
-        />
-        <Text strong>&nbsp;&nbsp; Georgica</Text>
-        <Text>&nbsp;&nbsp; 1 hour ago</Text>
+        <Avatar size={40} src={props.data.profilePicture} />
+        <Text strong>&nbsp;&nbsp;{props.data.userName}</Text>
+        <Text>
+          &nbsp;&nbsp; {dayjs(props.data.timestamp).format("MMM YYYY")}
+        </Text>
       </Row>
       <Row>
         <Paragraph style={{ marginTop: "20px", textAlign: "left" }}>
-          Lorem Ipsum is simply dummy text of the printing and typesetting
-          industry. Lorem Ipsum has been the industry's standard dummy text ever
-          since the 1500s, when an unknown printer took a galley of type and
-          scrambled it to make a type specimen book...
+          {props.data.description}
         </Paragraph>
       </Row>
       <Row align="middle">
-        <HeartOutlined style={{ fontSize: "25px" }} />
-        <Text>&nbsp; 20 likes</Text>
+        <Button style={{ border: "none" }} onClick={() => setLike(!like)}>
+          {like ? (
+            <HeartFilled style={{ fontSize: "25px" }} />
+          ) : (
+            <HeartOutlined style={{ fontSize: "25px" }} />
+          )}
+        </Button>
+        <Text>{props.data.likeCount} likes</Text>
         <CommentOutlined style={{ fontSize: "25px", marginLeft: "20px" }} />
-        <Text>&nbsp; 6 comments</Text>
+        <Text>&nbsp;{props.data.commentCount} comments</Text>
       </Row>
       <Divider />
       <Row>
         <Input
           bordered={false}
+          onPressEnter={console.log("click")}
           placeholder="Add a comment…"
           suffix={
             <Button>
