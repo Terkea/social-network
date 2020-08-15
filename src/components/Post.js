@@ -107,6 +107,7 @@ const Post = (props) => {
         postId: props.data.id,
         userImage: profile.photoURL,
         userId: auth.uid,
+        userName: profile.username,
       })
       .then(() => {
         form.resetFields();

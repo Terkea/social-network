@@ -33,7 +33,6 @@ const { Title, Text, Paragraph } = Typography;
 
 const Post = (props) => {
   const { postId } = props.match.params;
-  console.log("AICI", props);
   const [form] = Form.useForm();
   const firestore = useFirestore();
   // GRAB THE USER AND HIS PROFILE
@@ -127,6 +126,7 @@ const Post = (props) => {
         postId: postId,
         userImage: profile.photoURL,
         userId: auth.uid,
+        userName: profile.username,
       })
       .then(() => {
         form.resetFields();
@@ -242,23 +242,21 @@ const Post = (props) => {
                     marginLeft: "10px",
                   }}
                 >
-                  {isLoaded(comments) ? (
-                    Object.entries(comments).map((comment) => {
-                      return (
-                        <Comment
-                          style={{ paddingTop: "12px" }}
-                          // [0] -> doc id
-                          key={comment[0]}
-                          id={comment[0]}
-                          commentCount={currentPost.commentCount}
-                          // [1] -> doc data
-                          data={comment[1]}
-                        />
-                      );
-                    })
-                  ) : (
-                    <p>loading...</p>
-                  )}
+                  {isLoaded(comments) && !isEmpty(comments)
+                    ? Object.entries(comments).map((comment) => {
+                        return (
+                          <Comment
+                            style={{ paddingTop: "12px" }}
+                            // [0] -> doc id
+                            key={comment[0]}
+                            id={comment[0]}
+                            commentCount={currentPost.commentCount}
+                            // [1] -> doc data
+                            data={comment[1]}
+                          />
+                        );
+                      })
+                    : null}
                 </Row>
                 <Divider />
 

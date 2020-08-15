@@ -35,7 +35,7 @@ const CustomLayout = (props) => {
           {/* AUTH ROUTES */}
         </Menu>
       </Header>
-      <Content style={{ padding: "0 10px", height: "86vh" }}>
+      <Content style={{ padding: "0 10px", minHeight: "86vh" }}>
         <div style={{ padding: 24 }}>{props.children}</div>
       </Content>
       <Footer style={{ textAlign: "center" }}>IDK YET</Footer>
