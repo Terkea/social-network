@@ -32,6 +32,8 @@ import Likes from "./Likes";
 const { Title, Text, Paragraph } = Typography;
 
 const Post = (props) => {
+  const { postId } = props.match.params;
+  console.log("AICI", props);
   const [form] = Form.useForm();
   const firestore = useFirestore();
   // GRAB THE USER AND HIS PROFILE
@@ -42,27 +44,28 @@ const Post = (props) => {
   const comments = useSelector((state) => state.firestore.data.comments);
   // GRAB THE POST BY THE PROPS.POSTID VALUE
   const currentPost = useSelector(
-    ({ firestore: { data } }) => data.posts && data.posts[props.postId]
+    ({ firestore: { data } }) => data.posts && data.posts[postId]
   );
 
   // MODALS HOOK
   const [likesVisibility, setLikesVisibility] = useState(false);
+  const [profileModalVisibility, setProfileModalVisibility] = useState(true);
   useFirestoreConnect([
     {
       collection: "likes",
       where: [
-        ["postId", "==", props.postId],
+        ["postId", "==", postId],
         ["userId", "==", auth.uid || null],
       ],
       storeAs: `checkLike`,
     },
     {
       collection: "posts",
-      doc: props.postId,
+      doc: postId,
     },
     {
       collection: "comments",
-      where: [["postId", "==", props.postId]],
+      where: [["postId", "==", postId]],
       stoareAs: "comments",
       queryParams: ["orderByChild=createdAt"],
     },
@@ -76,7 +79,7 @@ const Post = (props) => {
         firestore
           .collection("likes")
           .add({
-            postId: props.postId,
+            postId: postId,
             userId: auth.uid,
             userName: profile.username,
             photoURL: profile.photoURL,
@@ -84,7 +87,7 @@ const Post = (props) => {
           .then(() => {
             firestore
               .collection("posts")
-              .doc(props.postId)
+              .doc(postId)
               .update({ likeCount: currentPost.likeCount + 1 });
           });
       }
@@ -97,7 +100,7 @@ const Post = (props) => {
           .then(() => {
             firestore
               .collection("posts")
-              .doc(props.postId)
+              .doc(postId)
               .update({ likeCount: currentPost.likeCount - 1 });
           });
       }
@@ -121,7 +124,7 @@ const Post = (props) => {
       .add({
         comment: values.comment,
         createdAt: new Date().toISOString(),
-        postId: props.postId,
+        postId: postId,
         userImage: profile.photoURL,
         userId: auth.uid,
       })
@@ -129,172 +132,184 @@ const Post = (props) => {
         form.resetFields();
         firestore
           .collection("posts")
-          .doc(props.postId)
+          .doc(postId)
           .update({ commentCount: currentPost.commentCount + 1 });
       });
   };
 
   return (
-    <Card
-      bodyStyle={{ border: "none", padding: 0 }}
-      hoverable
-      bordered={false}
-      style={{ marginTop: "20px" }}
+    <Modal
+      bodyStyle={{ padding: 0 }}
+      onCancel={() => {
+        setProfileModalVisibility(false);
+        props.history.goBack();
+      }}
+      width={900}
+      closable={false}
+      footer={null}
+      visible={profileModalVisibility}
     >
-      {
-        isLoaded(currentPost) && !isEmpty(currentPost) ? (
-          <Row>
-            {/* LIKES MODAL */}
-            <Modal
-              onCancel={() => {
-                setLikesVisibility(false);
-              }}
-              footer={null}
-              title="Likes"
-              visible={likesVisibility}
-            >
-              <Likes postId={"YfQRYe7EPScpdjIAJXky"} />
-            </Modal>
-            {/* LEFT SIDE */}
-            <Col md={16} xs={24}>
-              <img
-                alt="Sex"
-                src={currentPost.imageURL}
-                style={{
-                  objectFit: "contain",
-                  width: "100%",
-                  height: "100%",
+      <Card
+        bodyStyle={{ border: "none", padding: 0 }}
+        hoverable
+        bordered={false}
+        style={{ marginTop: "20px" }}
+      >
+        {
+          isLoaded(currentPost) && !isEmpty(currentPost) ? (
+            <Row>
+              {/* LIKES MODAL */}
+              <Modal
+                onCancel={() => {
+                  setLikesVisibility(false);
                 }}
-              />
-            </Col>
-            {/* RIGHT SIDE */}
-            <Col md={8} xs={24}>
-              {/* POST DATA */}
-              <Row style={{ alignItems: "flex-end", marginLeft: "10px" }}>
-                <Avatar size={40} src={currentPost.profilePicture} />
-                <Title level={4} strong style={{ marginLeft: "10px" }}>
-                  {currentPost.userName}
-                </Title>
-                <Title
-                  level={4}
-                  type="secondary"
-                  style={{ marginLeft: "10px" }}
-                >
-                  {dayjs(currentPost.timestamp).format("MMM YYYY")}
-                </Title>
-                {currentPost.userId === auth.uid ? (
-                  <Button style={{ border: "none" }} onClick={deletePost}>
-                    <DeleteOutlined />
-                  </Button>
-                ) : (
-                  "Follow"
-                )}
-              </Row>
-              {/* DESCRIPTION */}
-              <Row style={{ marginLeft: "10px" }}>
-                {currentPost.userId === auth.uid ? (
-                  <Paragraph
-                    editable={{ onChange: onChange }}
-                    style={{
-                      marginTop: "20px",
-                      textAlign: "left",
-                      width: "100%",
-                      marginBottom: "20px",
-                    }}
-                  >
-                    {currentPost.description}
-                  </Paragraph>
-                ) : (
-                  <Paragraph
-                    style={{
-                      marginTop: "20px",
-                      textAlign: "left",
-                      width: "100%",
-                      marginBottom: "20px",
-                    }}
-                  >
-                    {props.data.description}
-                  </Paragraph>
-                )}
-              </Row>
-              {/* <Divider /> */}
-
-              {/* COMMENTS */}
-              <Row
-                style={{
-                  height: `${280}px`,
-                  overflowY: "scroll",
-                  scrollbarWidth: "none",
-                  marginLeft: "10px",
-                }}
+                footer={null}
+                title="Likes"
+                visible={likesVisibility}
               >
-                {isLoaded(comments) ? (
-                  Object.entries(comments).map((comment) => {
-                    return (
-                      <Comment
-                        style={{ paddingTop: "12px" }}
-                        // [0] -> doc id
-                        key={comment[0]}
-                        id={comment[0]}
-                        commentCount={currentPost.commentCount}
-                        // [1] -> doc data
-                        data={comment[1]}
-                      />
-                    );
-                  })
-                ) : (
-                  <p>loading...</p>
-                )}
-              </Row>
-              <Divider />
-
-              {/* STATISTICS */}
-              <Row align="middle">
-                <Button style={{ border: "none" }} onClick={likePost}>
-                  {!isEmpty(checkLike) ? (
-                    <HeartFilled style={{ fontSize: "25px" }} />
-                  ) : (
-                    <HeartOutlined style={{ fontSize: "25px" }} />
-                  )}
-                </Button>
-                <Text onClick={() => setLikesVisibility(true)}>
-                  {currentPost.likeCount} Likes
-                </Text>
-                <CommentOutlined
-                  style={{ fontSize: "25px", marginLeft: "20px" }}
+                <Likes postId={"YfQRYe7EPScpdjIAJXky"} />
+              </Modal>
+              {/* LEFT SIDE */}
+              <Col md={16} xs={24}>
+                <img
+                  alt="Sex"
+                  src={currentPost.imageURL}
+                  style={{
+                    objectFit: "contain",
+                    width: "100%",
+                    height: "100%",
+                  }}
                 />
-                <Text>&nbsp;{currentPost.commentCount} Comments</Text>
-              </Row>
-
-              {/* ADD COMMENT */}
-              <Divider />
-              {isLoaded(auth) && !isEmpty(auth) ? (
-                <Row>
-                  <Form
-                    form={form}
-                    style={{ width: "95%" }}
-                    name="basic"
-                    onFinish={onFinishComment}
+              </Col>
+              {/* RIGHT SIDE */}
+              <Col md={8} xs={24}>
+                {/* POST DATA */}
+                <Row style={{ alignItems: "flex-end", marginLeft: "10px" }}>
+                  <Avatar size={40} src={currentPost.profilePicture} />
+                  <Title level={4} strong style={{ marginLeft: "10px" }}>
+                    {currentPost.userName}
+                  </Title>
+                  <Title
+                    level={4}
+                    type="secondary"
+                    style={{ marginLeft: "10px" }}
                   >
-                    <Form.Item name="comment" rules={[{ required: false }]}>
-                      <Input
-                        bordered={false}
-                        placeholder="Add a comment…"
-                        suffix={
-                          <Button onClick={() => form.submit()}>
-                            <SendOutlined />
-                          </Button>
-                        }
-                      />
-                    </Form.Item>
-                  </Form>
+                    {dayjs(currentPost.timestamp).format("MMM YYYY")}
+                  </Title>
+                  {currentPost.userId === auth.uid ? (
+                    <Button style={{ border: "none" }} onClick={deletePost}>
+                      <DeleteOutlined />
+                    </Button>
+                  ) : (
+                    "Follow"
+                  )}
                 </Row>
-              ) : null}
-            </Col>
-          </Row>
-        ) : null // display loading screen here
-      }
-    </Card>
+                {/* DESCRIPTION */}
+                <Row style={{ marginLeft: "10px" }}>
+                  {currentPost.userId === auth.uid ? (
+                    <Paragraph
+                      editable={{ onChange: onChange }}
+                      style={{
+                        marginTop: "20px",
+                        textAlign: "left",
+                        width: "100%",
+                        marginBottom: "20px",
+                      }}
+                    >
+                      {currentPost.description}
+                    </Paragraph>
+                  ) : (
+                    <Paragraph
+                      style={{
+                        marginTop: "20px",
+                        textAlign: "left",
+                        width: "100%",
+                        marginBottom: "20px",
+                      }}
+                    >
+                      {props.data.description}
+                    </Paragraph>
+                  )}
+                </Row>
+                {/* <Divider /> */}
+
+                {/* COMMENTS */}
+                <Row
+                  style={{
+                    height: `${280}px`,
+                    overflowY: "scroll",
+                    scrollbarWidth: "none",
+                    marginLeft: "10px",
+                  }}
+                >
+                  {isLoaded(comments) ? (
+                    Object.entries(comments).map((comment) => {
+                      return (
+                        <Comment
+                          style={{ paddingTop: "12px" }}
+                          // [0] -> doc id
+                          key={comment[0]}
+                          id={comment[0]}
+                          commentCount={currentPost.commentCount}
+                          // [1] -> doc data
+                          data={comment[1]}
+                        />
+                      );
+                    })
+                  ) : (
+                    <p>loading...</p>
+                  )}
+                </Row>
+                <Divider />
+
+                {/* STATISTICS */}
+                <Row align="middle">
+                  <Button style={{ border: "none" }} onClick={likePost}>
+                    {!isEmpty(checkLike) ? (
+                      <HeartFilled style={{ fontSize: "25px" }} />
+                    ) : (
+                      <HeartOutlined style={{ fontSize: "25px" }} />
+                    )}
+                  </Button>
+                  <Text onClick={() => setLikesVisibility(true)}>
+                    {currentPost.likeCount} Likes
+                  </Text>
+                  <CommentOutlined
+                    style={{ fontSize: "25px", marginLeft: "20px" }}
+                  />
+                  <Text>&nbsp;{currentPost.commentCount} Comments</Text>
+                </Row>
+
+                {/* ADD COMMENT */}
+                <Divider />
+                {isLoaded(auth) && !isEmpty(auth) ? (
+                  <Row>
+                    <Form
+                      form={form}
+                      style={{ width: "95%" }}
+                      name="basic"
+                      onFinish={onFinishComment}
+                    >
+                      <Form.Item name="comment" rules={[{ required: false }]}>
+                        <Input
+                          bordered={false}
+                          placeholder="Add a comment…"
+                          suffix={
+                            <Button onClick={() => form.submit()}>
+                              <SendOutlined />
+                            </Button>
+                          }
+                        />
+                      </Form.Item>
+                    </Form>
+                  </Row>
+                ) : null}
+              </Col>
+            </Row>
+          ) : null // display loading screen here
+        }
+      </Card>
+    </Modal>
   );
 };
 

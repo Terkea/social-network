@@ -26,11 +26,13 @@ import {
 import { useSelector } from "react-redux";
 import Modal from "antd/lib/modal/Modal";
 import Likes from "./Likes";
+import { useHistory } from "react-router-dom";
 
 const { Text, Paragraph } = Typography;
 
 const Post = (props) => {
   const [form] = Form.useForm();
+  const history = useHistory();
   const firestore = useFirestore();
   const auth = useSelector((state) => state.firebase.auth);
   const profile = useSelector((state) => state.firebase.profile);
@@ -119,7 +121,13 @@ const Post = (props) => {
     <Card
       hoverable
       style={{ maxWidth: 614, marginTop: "20px" }}
-      cover={<img alt="example" src={props.data.imageURL} />}
+      cover={
+        <img
+          alt="example"
+          onClick={() => history.push(`/p/${props.data.id}`)}
+          src={props.data.imageURL}
+        />
+      }
     >
       {/* LIKES MODAL */}
       <Modal

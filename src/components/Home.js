@@ -28,7 +28,7 @@ const Home = (props) => {
           <Col align="center" md={14} xs={24}>
             {isLoaded(posts) ? (
               posts.map((post) => {
-                return <Post data={post} />;
+                return <Post data={post} key={post.id} />;
               })
             ) : (
               <p>loading...</p>
