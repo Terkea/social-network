@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   Avatar,
@@ -24,6 +24,8 @@ import {
   useFirestore,
 } from "react-redux-firebase";
 import { useSelector } from "react-redux";
+import Modal from "antd/lib/modal/Modal";
+import Likes from "./Likes";
 
 const { Text, Paragraph } = Typography;
 
@@ -33,7 +35,7 @@ const Post = (props) => {
   const auth = useSelector((state) => state.firebase.auth);
   const profile = useSelector((state) => state.firebase.profile);
   const checkLike = useSelector((state) => state.firestore.data.checkLike);
-
+  const [likesVisibility, setLikesVisibility] = useState(false);
   useFirestoreConnect([
     {
       collection: "likes",
@@ -53,7 +55,12 @@ const Post = (props) => {
       if (isLoaded(checkLike) && isEmpty(checkLike)) {
         firestore
           .collection("likes")
-          .add({ postId: props.data.id, userId: auth.uid })
+          .add({
+            postId: props.data.id,
+            userId: auth.uid,
+            userName: profile.username,
+            photoURL: profile.photoURL,
+          })
           .then(() => {
             firestore
               .collection("posts")
@@ -112,14 +119,19 @@ const Post = (props) => {
     <Card
       hoverable
       style={{ maxWidth: 614, marginTop: "20px" }}
-      cover={
-        <img
-          alt="example"
-          src={props.data.imageURL}
-          onClick={() => console.log(props.data.id)}
-        />
-      }
+      cover={<img alt="example" src={props.data.imageURL} />}
     >
+      {/* LIKES MODAL */}
+      <Modal
+        onCancel={() => {
+          setLikesVisibility(false);
+        }}
+        footer={null}
+        title="Likes"
+        visible={likesVisibility}
+      >
+        <Likes postId={props.data.id} />
+      </Modal>
       <Row align="middle">
         <Avatar size={40} src={props.data.profilePicture} />
         <Text strong>&nbsp;&nbsp;{props.data.userName}</Text>
@@ -166,9 +178,11 @@ const Post = (props) => {
             <HeartOutlined style={{ fontSize: "25px" }} />
           )}
         </Button>
-        <Text>{props.data.likeCount} likes</Text>
+        <Text onClick={() => setLikesVisibility(true)}>
+          {props.data.likeCount} Likes
+        </Text>
         <CommentOutlined style={{ fontSize: "25px", marginLeft: "20px" }} />
-        <Text>&nbsp;{props.data.commentCount} comments</Text>
+        <Text>&nbsp;{props.data.commentCount} Comments</Text>
       </Row>
       {isLoaded(auth) && !isEmpty(auth) ? <Divider /> : null}
       {isLoaded(auth) && !isEmpty(auth) ? (

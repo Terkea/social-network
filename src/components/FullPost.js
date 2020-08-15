@@ -26,6 +26,8 @@ import {
 } from "react-redux-firebase";
 import Comment from "./Comment";
 import { useSelector } from "react-redux";
+import Modal from "antd/lib/modal/Modal";
+import Likes from "./Likes";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -42,6 +44,9 @@ const Post = (props) => {
   const currentPost = useSelector(
     ({ firestore: { data } }) => data.posts && data.posts[props.postId]
   );
+
+  // MODALS HOOK
+  const [likesVisibility, setLikesVisibility] = useState(false);
   useFirestoreConnect([
     {
       collection: "likes",
@@ -70,7 +75,12 @@ const Post = (props) => {
       if (isLoaded(checkLike) && isEmpty(checkLike)) {
         firestore
           .collection("likes")
-          .add({ postId: props.postId, userId: auth.uid })
+          .add({
+            postId: props.postId,
+            userId: auth.uid,
+            userName: profile.username,
+            photoURL: profile.photoURL,
+          })
           .then(() => {
             firestore
               .collection("posts")
@@ -95,7 +105,6 @@ const Post = (props) => {
   };
 
   const onChange = (str) => {
-    console.log(str);
     firestore
       .collection("posts")
       .doc(props.data.id)
@@ -135,6 +144,17 @@ const Post = (props) => {
       {
         isLoaded(currentPost) && !isEmpty(currentPost) ? (
           <Row>
+            {/* LIKES MODAL */}
+            <Modal
+              onCancel={() => {
+                setLikesVisibility(false);
+              }}
+              footer={null}
+              title="Likes"
+              visible={likesVisibility}
+            >
+              <Likes postId={"YfQRYe7EPScpdjIAJXky"} />
+            </Modal>
             {/* LEFT SIDE */}
             <Col md={16} xs={24}>
               <img
@@ -237,11 +257,13 @@ const Post = (props) => {
                     <HeartOutlined style={{ fontSize: "25px" }} />
                   )}
                 </Button>
-                <Text>{currentPost.likeCount} likes</Text>
+                <Text onClick={() => setLikesVisibility(true)}>
+                  {currentPost.likeCount} Likes
+                </Text>
                 <CommentOutlined
                   style={{ fontSize: "25px", marginLeft: "20px" }}
                 />
-                <Text>&nbsp;{currentPost.commentCount} comments</Text>
+                <Text>&nbsp;{currentPost.commentCount} Comments</Text>
               </Row>
 
               {/* ADD COMMENT */}

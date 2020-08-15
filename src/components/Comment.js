@@ -8,8 +8,6 @@ const Comment = (props) => {
   const auth = useSelector((state) => state.firebase.auth);
   const firestore = useFirestore();
 
-  console.log(props);
-
   const deleteComment = () => {
     firestore
       .collection("comments")
