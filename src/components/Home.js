@@ -12,6 +12,7 @@ import {
 } from "react-redux-firebase";
 import { useSelector, connect } from "react-redux";
 import { compose } from "redux";
+import CreatePost from "./CreatePost";
 
 const Home = (props) => {
   const auth = useSelector((state) => state.firebase.auth);
@@ -41,7 +42,7 @@ const Home = (props) => {
             <MyProfile />
           </Col>
           <Col align="center" md={14} xs={24}>
-            <p>TODO: create post</p>
+            <CreatePost />
             {isLoaded(posts) ? (
               posts.map((post) => {
                 return <Post data={post} key={post.id} />;

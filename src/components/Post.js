@@ -87,7 +87,6 @@ const Post = (props) => {
   };
 
   const onChange = (str) => {
-    console.log(str);
     firestore
       .collection("posts")
       .doc(props.data.id)
