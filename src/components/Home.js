@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Row, Col } from "antd";
+import { Row, Col, Card, Skeleton } from "antd";
 import MyProfile from "./MyProfile";
 import Post from "./Post";
 
@@ -32,7 +32,7 @@ const Home = (props) => {
                 return <Post data={post} key={post.id} />;
               })
             ) : (
-              <p>loading...</p>
+              <Skeleton avatar paragraph={{ rows: 4 }} />
             )}
           </Col>
         </Row>
@@ -48,7 +48,8 @@ const Home = (props) => {
                 return <Post data={post} key={post.id} />;
               })
             ) : (
-              <p>loading...</p>
+              // SKELETON POSTS
+              <Skeleton avatar paragraph={{ rows: 4 }} />
             )}
           </Col>
         </Row>

@@ -55,7 +55,7 @@ const CreatePost = () => {
   };
 
   const onFinish = (values) => {
-    if (fileList.length == 0) {
+    if (fileList.length === 0) {
       runNotifications("You forgot to upload a picture", "ERROR");
     } else {
       firestore.collection("posts").add({
