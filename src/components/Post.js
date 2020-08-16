@@ -140,6 +140,8 @@ const Post = (props) => {
       >
         <Likes postId={props.data.id} />
       </Modal>
+
+      {/* USER DATA */}
       <Row align="middle">
         <Avatar size={40} src={props.data.profilePicture} />
         <Text strong>&nbsp;&nbsp;{props.data.userName}</Text>
@@ -180,7 +182,7 @@ const Post = (props) => {
         )}
       </Row>
       {/* STATISTICS */}
-      <Row>
+      <Row align="middle">
         <Button style={{ border: "none" }} onClick={likePost}>
           {!isEmpty(checkLike) ? (
             <HeartFilled style={{ fontSize: "25px" }} />
@@ -191,8 +193,10 @@ const Post = (props) => {
         <Text onClick={() => setLikesVisibility(true)}>
           {props.data.likeCount} Likes
         </Text>
-        <CommentOutlined style={{ fontSize: "25px", marginLeft: "20px" }} />
-        <Text>&nbsp;{props.data.commentCount} Comments</Text>
+        <Button style={{ border: "none" }}>
+          <CommentOutlined style={{ fontSize: "25px", marginLeft: "20px" }} />
+        </Button>
+        <Text>{props.data.commentCount} Comments</Text>
       </Row>
       <Divider />
       {/* WRITE COMMENT */}

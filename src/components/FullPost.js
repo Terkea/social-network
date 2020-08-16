@@ -167,7 +167,7 @@ const Post = (props) => {
                 title="Likes"
                 visible={likesVisibility}
               >
-                <Likes postId={"YfQRYe7EPScpdjIAJXky"} />
+                <Likes postId={postId} />
               </Modal>
               {/* LEFT SIDE */}
               <Col md={16} xs={24}>
@@ -264,7 +264,7 @@ const Post = (props) => {
                 <Divider />
 
                 {/* STATISTICS */}
-                <Row>
+                <Row align="middle">
                   <Button style={{ border: "none" }} onClick={likePost}>
                     {!isEmpty(checkLike) ? (
                       <HeartFilled style={{ fontSize: "25px" }} />
@@ -275,10 +275,12 @@ const Post = (props) => {
                   <Text onClick={() => setLikesVisibility(true)}>
                     {currentPost.likeCount} Likes
                   </Text>
-                  <CommentOutlined
-                    style={{ fontSize: "25px", marginLeft: "20px" }}
-                  />
-                  <Text>&nbsp;{currentPost.commentCount} Comments</Text>
+                  <Button style={{ border: "none" }}>
+                    <CommentOutlined
+                      style={{ fontSize: "25px", marginLeft: "20px" }}
+                    />
+                  </Button>
+                  <Text>{currentPost.commentCount} Comments</Text>
                 </Row>
 
                 {/* ADD COMMENT */}

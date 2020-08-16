@@ -4,10 +4,12 @@ import { useSelector } from "react-redux";
 import { DeleteOutlined } from "@ant-design/icons";
 import { useFirestore, isLoaded, isEmpty } from "react-redux-firebase";
 import Moment from "react-moment";
+import { useHistory } from "react-router-dom";
 const Comment = (props) => {
   const { Text } = Typography;
   const auth = useSelector((state) => state.firebase.auth);
   const firestore = useFirestore();
+  const history = useHistory();
 
   const deleteComment = () => {
     firestore
@@ -27,11 +29,21 @@ const Comment = (props) => {
       {!isEmpty(props.data) ? (
         <Row style={{ marginTop: "12px", width: "100%" }}>
           <Col span={5}>
-            <Avatar size={40} src={props.data.userImage} />
+            <Avatar
+              onClick={() => history.push(`/u/${props.data.userId}`)}
+              size={40}
+              src={props.data.userImage}
+            />
           </Col>
           <Col span={19}>
             <Text>
-              <Text strong>{props.data.userName}</Text> {props.data.comment}
+              <Text
+                onClick={() => history.push(`/u/${props.data.userId}`)}
+                strong
+              >
+                {props.data.userName}
+              </Text>{" "}
+              {props.data.comment}
             </Text>
             <Text type="secondary">
               {"  "}

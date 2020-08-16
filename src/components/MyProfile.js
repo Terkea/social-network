@@ -27,6 +27,7 @@ import UploadProfilePicture from "./UploadProfilePicture";
 import { connect, useSelector } from "react-redux";
 import { useFirebase } from "react-redux-firebase";
 import Moment from "react-moment";
+import { useHistory } from "react-router-dom";
 
 const { Title, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -35,6 +36,7 @@ const MyProfile = (props) => {
   const firebase = useFirebase();
   const profile = useSelector((state) => state.firebase.profile);
   const auth = useSelector((state) => state.firebase.auth);
+  const history = useHistory();
   // ANTD FORM INPUT TRICKERY
   // https://stackoverflow.com/a/61244400/8193864
   // https://stackoverflow.com/a/62855456/8193864
@@ -200,6 +202,7 @@ const MyProfile = (props) => {
             <Avatar
               align="middle"
               src={profile.photoURL}
+              onClick={() => history.push(`/u/${auth.uid}`)}
               size={256}
               icon={<UserOutlined />}
             />

@@ -1,18 +1,14 @@
 import React from "react";
-import Modal from "antd/lib/modal/Modal";
-import {
-  useFirestore,
-  useFirestoreConnect,
-  isLoaded,
-  isEmpty,
-} from "react-redux-firebase";
+import { useFirestoreConnect, isLoaded, isEmpty } from "react-redux-firebase";
 import { useSelector } from "react-redux";
 import { Typography } from "antd";
 import Avatar from "antd/lib/avatar/avatar";
+import { useHistory } from "react-router-dom";
 const Likes = (props) => {
-  const firestore = useFirestore();
-  const { Text, Title } = Typography;
+  const history = useHistory();
+  const { Title } = Typography;
   const likes = useSelector((state) => state.firestore.data.likes);
+  
   useFirestoreConnect([
     {
       collection: "likes",
@@ -26,6 +22,7 @@ const Likes = (props) => {
         Object.entries(likes).map((comment) => {
           return (
             <li
+              onClick={() => history.push(`/u/${comment[1].userId}`)}
               style={{ paddingTop: "12px" }}
               // [0] -> doc id
               key={comment[0]}
