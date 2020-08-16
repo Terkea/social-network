@@ -74,7 +74,7 @@ const CreatePost = () => {
   };
 
   return (
-    <Card hoverable style={{ maxWidth: 614, marginTop: "20px" }}>
+    <Card hoverable style={{ maxWidth: 614 }}>
       <Form form={form} onFinish={onFinish}>
         <Form.Item name="description" rules={[{ required: false }]}>
           <Input

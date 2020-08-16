@@ -184,21 +184,28 @@ const Post = (props) => {
               {/* RIGHT SIDE */}
               <Col md={8} xs={24}>
                 {/* POST DATA */}
-                <Row style={{ alignItems: "flex-end", marginLeft: "10px" }}>
-                  <Avatar size={40} src={currentPost.profilePicture} />
+                <Row
+                  justify="start"
+                  // align="start"
+                  style={{ marginTop: "10px", marginLeft: "10px" }}
+                >
+                  <Avatar
+                    // style={{ display: "inline-block" }}
+                    size={40}
+                    src={currentPost.profilePicture}
+                  />
                   <Title level={4} strong style={{ marginLeft: "10px" }}>
                     {currentPost.userName}
                   </Title>
-                  <Text type="secondary">
-                    <Moment fromNow>{currentPost.timestamp}</Moment>
-                  </Text>
+
                   {currentPost.userId === auth.uid ? (
                     <Button style={{ border: "none" }} onClick={deletePost}>
                       <DeleteOutlined />
                     </Button>
-                  ) : (
-                    "Follow"
-                  )}
+                  ) : null}
+                  <Text style={{ display: "inline-block" }} type="secondary">
+                    <Moment fromNow>{currentPost.timestamp}</Moment>
+                  </Text>
                 </Row>
                 {/* DESCRIPTION */}
                 <Row style={{ marginLeft: "10px" }}>
@@ -257,7 +264,7 @@ const Post = (props) => {
                 <Divider />
 
                 {/* STATISTICS */}
-                <Row align="middle">
+                <Row>
                   <Button style={{ border: "none" }} onClick={likePost}>
                     {!isEmpty(checkLike) ? (
                       <HeartFilled style={{ fontSize: "25px" }} />

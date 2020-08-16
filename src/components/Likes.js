@@ -4,6 +4,7 @@ import {
   useFirestore,
   useFirestoreConnect,
   isLoaded,
+  isEmpty,
 } from "react-redux-firebase";
 import { useSelector } from "react-redux";
 import { Typography } from "antd";
@@ -21,7 +22,7 @@ const Likes = (props) => {
   ]);
   return (
     <ul style={{ listStyle: "none" }}>
-      {isLoaded(likes) ? (
+      {isLoaded(likes) && !isEmpty(likes) ? (
         Object.entries(likes).map((comment) => {
           return (
             <li
@@ -45,7 +46,7 @@ const Likes = (props) => {
           );
         })
       ) : (
-        <p>loading...</p>
+        <p>No one likes this</p>
       )}
     </ul>
   );

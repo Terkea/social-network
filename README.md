@@ -5,3 +5,4 @@ TODO:
 - notifications
 - update image & username
 - link post modal background
+- skeletons

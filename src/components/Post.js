@@ -179,7 +179,8 @@ const Post = (props) => {
           </Paragraph>
         )}
       </Row>
-      <Row align="middle">
+      {/* STATISTICS */}
+      <Row>
         <Button style={{ border: "none" }} onClick={likePost}>
           {!isEmpty(checkLike) ? (
             <HeartFilled style={{ fontSize: "25px" }} />
@@ -193,7 +194,8 @@ const Post = (props) => {
         <CommentOutlined style={{ fontSize: "25px", marginLeft: "20px" }} />
         <Text>&nbsp;{props.data.commentCount} Comments</Text>
       </Row>
-      {isLoaded(auth) && !isEmpty(auth) ? <Divider /> : null}
+      <Divider />
+      {/* WRITE COMMENT */}
       {isLoaded(auth) && !isEmpty(auth) ? (
         <Row>
           <Form

@@ -14,6 +14,7 @@ import { Provider } from "react-redux";
 import { ReactReduxFirebaseProvider } from "react-redux-firebase";
 
 import { store, rrfProps } from "./createStore";
+import UserPage from "./components/UserPage";
 
 const App = (props) => {
   return (
@@ -27,6 +28,7 @@ const App = (props) => {
             <CustomLayout {...props}>
               <Route exact path="/" component={Home} />
               <Route exact path="/p/:postId" component={FullPost} />
+              <Route exact path="/u/:userId" component={UserPage} />
             </CustomLayout>
           </Switch>
         </Router>
