@@ -72,6 +72,7 @@ const Register = (props) => {
           email: values.email,
           createdAt: new Date().toISOString(),
           uid: auth.uid || "",
+          photoURL: "",
           bio: "",
           location: "",
           website: "",

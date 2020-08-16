@@ -68,6 +68,20 @@ const Post = (props) => {
               .collection("posts")
               .doc(props.data.id)
               .update({ likeCount: props.data.likeCount + 1 });
+          })
+          .then(() => {
+            if (props.data.userId !== auth.uid) {
+              // CHECK FOR OWN POST
+              firestore.collection("notifications").add({
+                photoURL: profile.photoURL || null,
+                username: profile.username,
+                type: "liked",
+                createdAt: firestore.FieldValue.serverTimestamp(),
+                postId: props.data.id,
+                recipientId: props.data.userId,
+                seen: false,
+              });
+            }
           });
       }
 
@@ -113,7 +127,21 @@ const Post = (props) => {
         firestore
           .collection("posts")
           .doc(props.data.id)
-          .update({ commentCount: props.data.commentCount + 1 });
+          .update({ commentCount: props.data.commentCount + 1 })
+          .then(() => {
+            if (props.data.userId !== auth.uid) {
+              // CHECK FOR OWN POST
+              firestore.collection("notifications").add({
+                photoURL: profile.photoURL || null,
+                username: profile.username,
+                type: "commented",
+                timestamp: new Date().toISOString(),
+                postId: props.data.id,
+                recipientId: props.data.userId,
+                seen: false,
+              });
+            }
+          });
       });
   };
 

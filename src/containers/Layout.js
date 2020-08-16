@@ -1,21 +1,76 @@
-import React from "react";
-import { Layout, Menu, message, Dropdown, Badge } from "antd";
-import { Link } from "react-router-dom";
-import { isEmpty } from "react-redux-firebase";
+import React, { useState, useEffect } from "react";
+import {
+  Layout,
+  Menu,
+  message,
+  Dropdown,
+  Badge,
+  notification,
+  Typography,
+} from "antd";
+import { Link, useHistory } from "react-router-dom";
+import {
+  isEmpty,
+  useFirestoreConnect,
+  isLoaded,
+  useFirestore,
+} from "react-redux-firebase";
 import { useSelector } from "react-redux";
 import { HomeOutlined, BellOutlined, DownOutlined } from "@ant-design/icons";
+import Avatar from "antd/lib/avatar/avatar";
+import Moment from "react-moment";
 const { Header, Content, Footer } = Layout;
 
 const CustomLayout = (props) => {
+  const { Text } = Typography;
+  const history = useHistory();
+  const firestore = useFirestore();
   const auth = useSelector((state) => state.firebase.auth);
-
-  const menu = (
-    <Menu>
-      <Menu.Item key="1">Clicking me will not close the menu.</Menu.Item>
-      <Menu.Item key="2">Clicking me will not close the menu also.</Menu.Item>
-      <Menu.Item key="3">Clicking me will close the menu.</Menu.Item>
-    </Menu>
+  // const [counter, setCounter] = useState(0);
+  const notifications = useSelector(
+    (state) => state.firestore.data.notifications
   );
+
+  // MODALS HOOK
+  useFirestoreConnect([
+    {
+      collection: "notifications",
+      where: [
+        ["recipientId", "==", auth.uid || null],
+        ["seen", "==", false],
+      ],
+      limit: 10,
+      // queryParams: ["orderByChild=createdAt"],
+      stoareAs: "notifications",
+    },
+  ]);
+
+  var counter = 0;
+
+  if (isLoaded(notifications) && !isEmpty(notifications)) {
+    Object.entries(notifications).forEach((notification) => {
+      if (notification[1].seen === false) {
+        try {
+          counter += 1;
+        } catch {
+          counter = 0;
+        }
+      }
+    });
+  }
+
+  // console.log(counter);
+
+  const readNotifications = () => {
+    if (isLoaded(notifications) && !isEmpty(notifications)) {
+      Object.entries(notifications).forEach((notification) => {
+        firestore
+          .collection("notifications")
+          .doc(notification[0])
+          .update({ seen: true });
+      });
+    }
+  };
 
   return (
     <Layout className="layout">
@@ -29,29 +84,65 @@ const CustomLayout = (props) => {
           </Menu.Item>
 
           <Menu.Item
-            key="123"
+            key="notifications"
             icon={
-              <Badge count={1}>
+              <Badge count={counter}>
                 <BellOutlined style={{ marginLeft: "10px" }} />
               </Badge>
             }
           >
-            <Dropdown overlay={menu} placement="bottomRight">
+            <Dropdown
+              onClick={readNotifications}
+              overlay={
+                <Menu>
+                  {isLoaded(notifications) && !isEmpty(notifications) ? (
+                    Object.entries(notifications).map((notification) => {
+                      return (
+                        <Menu.Item
+                          key={notification[0]}
+                          onClick={() => {
+                            readNotifications();
+                            history.push(`/p/${notification[1].postId}`);
+                          }}
+                        >
+                          <Avatar
+                            style={{ display: "inline-block" }}
+                            size={20}
+                            src={notification[1].photoURL || null}
+                          />
+                          <Text
+                            style={{
+                              display: "inline-block",
+                              marginLeft: "10px",
+                            }}
+                          >
+                            {notification[1].username}
+                          </Text>
+                          <Text> {notification[1].type} your post. </Text>
+                          <Text type="secondary">
+                            <Moment fromNow>
+                              {notification[1].createdAt.toDate()}
+                            </Moment>
+                          </Text>
+                          {notification[1].seen === false ? (
+                            <Text type="danger"> NEW!</Text>
+                          ) : null}
+                        </Menu.Item>
+                      );
+                    })
+                  ) : (
+                    <p>No notifications</p>
+                  )}
+                </Menu>
+              }
+              placement="bottomRight"
+            >
               <a
                 className="ant-dropdown-link"
                 onClick={(e) => e.preventDefault()}
               ></a>
             </Dropdown>
           </Menu.Item>
-
-          {/* <Dropdown overlay={menu}>
-            <a
-              className="ant-dropdown-link"
-              onClick={(e) => e.preventDefault()}
-            >
-              Hover me <DownOutlined />
-            </a>
-          </Dropdown> */}
 
           {/* PUBLIC ROUTES */}
 
