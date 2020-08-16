@@ -16,7 +16,6 @@ import {
   SendOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
-import dayjs from "dayjs";
 import {
   useFirestoreConnect,
   isLoaded,
@@ -27,6 +26,7 @@ import { useSelector } from "react-redux";
 import Modal from "antd/lib/modal/Modal";
 import Likes from "./Likes";
 import { useHistory } from "react-router-dom";
+import Moment from "react-moment";
 
 const { Text, Paragraph } = Typography;
 
@@ -143,9 +143,10 @@ const Post = (props) => {
       <Row align="middle">
         <Avatar size={40} src={props.data.profilePicture} />
         <Text strong>&nbsp;&nbsp;{props.data.userName}</Text>
-        <Text>
-          &nbsp;&nbsp; {dayjs(props.data.timestamp).format("MMM YYYY")}
+        <Text type="secondary">
+          &nbsp; <Moment fromNow>{props.data.timestamp}</Moment>
         </Text>
+
         {props.data.userId === auth.uid ? (
           <Button style={{ border: "none" }} onClick={deletePost}>
             <DeleteOutlined />

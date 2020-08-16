@@ -1,6 +1,6 @@
 TODO:
 
-- deltatime
+- ~~deltatime~~
 - profile page
 - notifications
 - update image & username

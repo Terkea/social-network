@@ -3,7 +3,7 @@ import { Upload, Card, Input, Button, Form } from "antd";
 import ImgCrop from "antd-img-crop";
 import { InboxOutlined, SendOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
-import { useFirestore, useFirebase } from "react-redux-firebase";
+import { useFirestore } from "react-redux-firebase";
 import { runNotifications } from "../helpers/Notification";
 import { storage } from "../createStore";
 import uuid from "react-uuid";
@@ -16,7 +16,6 @@ const CreatePost = () => {
   const auth = useSelector((state) => state.firebase.auth);
   const profile = useSelector((state) => state.firebase.profile);
   const firestore = useFirestore();
-  const firebase = useFirebase();
 
   const onChange = ({ fileList: newFileList }) => {
     setFileList(newFileList.slice(-1));

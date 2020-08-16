@@ -21,13 +21,12 @@ import {
   CalendarOutlined,
 } from "@ant-design/icons";
 
-import dayjs from "dayjs";
-
 // import ChangePassword from "./CustomModal";
 import { runNotifications } from "../helpers/Notification";
 import UploadProfilePicture from "./UploadProfilePicture";
 import { connect, useSelector } from "react-redux";
 import { useFirebase } from "react-redux-firebase";
+import Moment from "react-moment";
 
 const { Title, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -248,7 +247,7 @@ const MyProfile = (props) => {
               {auth.createdAt ? (
                 <Paragraph align="center" level={4}>
                   <CalendarOutlined />
-                  &nbsp; Joined {dayjs(profile.createdAt).format("MMM YYYY")}
+                  &nbsp; Joined <Moment fromNow>{profile.createdAt}</Moment>
                 </Paragraph>
               ) : null}
             </Col>
