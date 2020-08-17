@@ -9,6 +9,7 @@ import {
   Button,
   Form,
   Col,
+  Space,
 } from "antd";
 import {
   HeartFilled,
@@ -66,7 +67,7 @@ const Post = (props) => {
       collection: "comments",
       where: [["postId", "==", postId]],
       stoareAs: "comments",
-      queryParams: ["orderByChild=createdAt"],
+      // queryParams: ["orderByChild=createdAt"],
     },
   ]);
   // check if the post is liked or not
@@ -172,7 +173,7 @@ const Post = (props) => {
               {/* LEFT SIDE */}
               <Col md={16} xs={24}>
                 <img
-                  alt="Sex"
+                  alt={currentPost.description}
                   src={currentPost.imageURL}
                   style={{
                     objectFit: "contain",
@@ -186,7 +187,6 @@ const Post = (props) => {
                 {/* POST DATA */}
                 <Row
                   justify="start"
-                  // align="start"
                   style={{ marginTop: "10px", marginLeft: "10px" }}
                 >
                   <Avatar
@@ -194,8 +194,12 @@ const Post = (props) => {
                     size={40}
                     src={currentPost.profilePicture}
                   />
-                  <Title level={4} strong style={{ marginLeft: "10px" }}>
-                    {currentPost.userName}
+                  <Title
+                    level={4}
+                    strong
+                    style={{ marginLeft: "10px", display: "inline-block" }}
+                  >
+                    {currentPost.userName} &nbsp;
                   </Title>
 
                   {currentPost.userId === auth.uid ? (
@@ -203,10 +207,8 @@ const Post = (props) => {
                       <DeleteOutlined />
                     </Button>
                   ) : null}
-                  <Text style={{ display: "inline-block" }} type="secondary">
-                    <Moment fromNow>{currentPost.timestamp}</Moment>
-                  </Text>
                 </Row>
+
                 {/* DESCRIPTION */}
                 <Row style={{ marginLeft: "10px" }}>
                   {currentPost.userId === auth.uid ? (
@@ -221,46 +223,39 @@ const Post = (props) => {
                     >
                       {currentPost.description}
                     </Paragraph>
-                  ) : (
-                    <Paragraph
-                      style={{
-                        marginTop: "20px",
-                        textAlign: "left",
-                        width: "100%",
-                        marginBottom: "20px",
-                      }}
-                    >
-                      {props.data.description}
-                    </Paragraph>
-                  )}
+                  ) : null}
                 </Row>
                 {/* <Divider /> */}
 
                 {/* COMMENTS */}
-                <Row
-                  style={{
-                    height: `${280}px`,
-                    overflowY: "scroll",
-                    scrollbarWidth: "none",
-                    marginLeft: "10px",
-                  }}
-                >
-                  {isLoaded(comments) && !isEmpty(comments)
-                    ? Object.entries(comments).map((comment) => {
-                        return (
-                          <Comment
-                            style={{ paddingTop: "12px" }}
-                            // [0] -> doc id
-                            key={comment[0]}
-                            id={comment[0]}
-                            commentCount={currentPost.commentCount}
-                            // [1] -> doc data
-                            data={comment[1]}
-                          />
-                        );
-                      })
-                    : null}
-                </Row>
+                {!isEmpty(comments) ? (
+                  <Row
+                    style={{
+                      height: `${270}px`,
+                      overflowY: "scroll",
+                      scrollbarWidth: "none",
+                      marginLeft: "10px",
+                    }}
+                  >
+                    {isLoaded(comments) && !isEmpty(comments)
+                      ? Object.entries(comments).map((comment) => {
+                          return (
+                            <Comment
+                              style={{ paddingTop: "12px" }}
+                              // [0] -> doc id
+                              key={comment[0]}
+                              id={comment[0]}
+                              commentCount={currentPost.commentCount}
+                              // [1] -> doc data
+                              data={comment[1]}
+                            />
+                          );
+                        })
+                      : null}
+                  </Row>
+                ) : (
+                  <div style={{ height: "270px" }}></div>
+                )}
                 <Divider />
 
                 {/* STATISTICS */}
@@ -281,6 +276,9 @@ const Post = (props) => {
                     />
                   </Button>
                   <Text>{currentPost.commentCount} Comments</Text>
+                  <Text style={{ marginLeft: "20px" }} type="secondary">
+                    <Moment fromNow>{currentPost.timestamp}</Moment>
+                  </Text>
                 </Row>
 
                 {/* ADD COMMENT */}

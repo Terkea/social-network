@@ -83,66 +83,70 @@ const CustomLayout = (props) => {
             <Link to="/" />
           </Menu.Item>
 
-          <Menu.Item
-            key="notifications"
-            icon={
-              <Badge count={counter}>
-                <BellOutlined style={{ marginLeft: "10px" }} />
-              </Badge>
-            }
-          >
-            <Dropdown
-              onClick={readNotifications}
-              overlay={
-                <Menu>
-                  {isLoaded(notifications) && !isEmpty(notifications) ? (
-                    Object.entries(notifications).map((notification) => {
-                      return (
-                        <Menu.Item
-                          key={notification[0]}
-                          onClick={() => {
-                            readNotifications();
-                            history.push(`/p/${notification[1].postId}`);
-                          }}
-                        >
-                          <Avatar
-                            style={{ display: "inline-block" }}
-                            size={20}
-                            src={notification[1].photoURL || null}
-                          />
-                          <Text
-                            style={{
-                              display: "inline-block",
-                              marginLeft: "10px",
+          {!isEmpty(auth) ? (
+            <Menu.Item
+              key="notifications"
+              icon={
+                <Badge count={counter}>
+                  <BellOutlined style={{ marginLeft: "10px" }} />
+                </Badge>
+              }
+            >
+              <Dropdown
+                onClick={readNotifications}
+                overlay={
+                  <Menu>
+                    {isLoaded(notifications) && !isEmpty(notifications) ? (
+                      Object.entries(notifications).map((notification) => {
+                        return (
+                          <Menu.Item
+                            key={notification[0]}
+                            onClick={() => {
+                              readNotifications();
+                              history.push(`/p/${notification[1].postId}`);
                             }}
                           >
-                            {notification[1].username}
-                          </Text>
-                          <Text> {notification[1].type} your post. </Text>
-                          <Text type="secondary">
-                            <Moment fromNow>
-                              {notification[1].createdAt.toDate()}
-                            </Moment>
-                          </Text>
-                          {notification[1].seen === false ? (
-                            <Text type="danger"> NEW!</Text>
-                          ) : null}
+                            <Avatar
+                              style={{ display: "inline-block" }}
+                              size={20}
+                              src={notification[1].photoURL || null}
+                            />
+                            <Text
+                              style={{
+                                display: "inline-block",
+                                marginLeft: "10px",
+                              }}
+                            >
+                              {notification[1].username}
+                            </Text>
+                            <Text> {notification[1].type} your post. </Text>
+                            <Text type="secondary">
+                              <Moment fromNow>
+                                {notification[1].createdAt.toDate()}
+                              </Moment>
+                            </Text>
+                            {notification[1].seen === false ? (
+                              <Text type="danger"> NEW!</Text>
+                            ) : null}
+                          </Menu.Item>
+                        );
+                      })
+                    ) : (
+                        <Menu.Item key={notification[0]}>
+                          <Text>No Notifications</Text>
                         </Menu.Item>
-                      );
-                    })
-                  ) : (
-                    <p>No notifications</p>
-                  )}
-                </Menu>
-              }
-              placement="bottomRight"
-            >
-              <a
-                className="ant-dropdown-link"
-                onClick={(e) => e.preventDefault()}
-              ></a>
-            </Dropdown>
-          </Menu.Item>
+                      )}
+                  </Menu>
+                }
+                placement="bottomRight"
+              >
+                <a
+                  className="ant-dropdown-link"
+                  onClick={(e) => e.preventDefault()}
+                ></a>
+              </Dropdown>
+            </Menu.Item>
+          ) : null}
 
           {/* PUBLIC ROUTES */}
 
