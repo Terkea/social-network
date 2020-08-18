@@ -122,7 +122,7 @@ const CustomLayout = (props) => {
                             <Text> {notification[1].type} your post. </Text>
                             <Text type="secondary">
                               <Moment fromNow>
-                                {notification[1].createdAt.toDate()}
+                                {notification[1].timestamp}
                               </Moment>
                             </Text>
                             {notification[1].seen === false ? (
@@ -132,10 +132,10 @@ const CustomLayout = (props) => {
                         );
                       })
                     ) : (
-                        <Menu.Item key={notification[0]}>
-                          <Text>No Notifications</Text>
-                        </Menu.Item>
-                      )}
+                      <Menu.Item key={notification[0]}>
+                        <Text>No Notifications</Text>
+                      </Menu.Item>
+                    )}
                   </Menu>
                 }
                 placement="bottomRight"

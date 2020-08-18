@@ -10,6 +10,7 @@ import {
   Form,
   Col,
   Space,
+  Skeleton,
 } from "antd";
 import {
   HeartFilled,
@@ -89,6 +90,20 @@ const Post = (props) => {
               .collection("posts")
               .doc(postId)
               .update({ likeCount: currentPost.likeCount + 1 });
+          })
+          .then(() => {
+            if (currentPost.userId !== auth.uid) {
+              // CHECK FOR OWN POST
+              firestore.collection("notifications").add({
+                photoURL: profile.photoURL || null,
+                username: profile.username,
+                type: "liked",
+                createdAt: firestore.FieldValue.serverTimestamp(),
+                postId: postId,
+                recipientId: currentPost.userId,
+                seen: false,
+              });
+            }
           });
       }
 
@@ -135,6 +150,20 @@ const Post = (props) => {
           .collection("posts")
           .doc(postId)
           .update({ commentCount: currentPost.commentCount + 1 });
+      })
+      .then(() => {
+        if (currentPost.userId !== auth.uid) {
+          // CHECK FOR OWN POST
+          firestore.collection("notifications").add({
+            photoURL: profile.photoURL || null,
+            username: profile.username,
+            type: "commented",
+            createdAt: firestore.FieldValue.serverTimestamp(),
+            postId: postId,
+            recipientId: currentPost.userId,
+            seen: false,
+          });
+        }
       });
   };
 
@@ -156,159 +185,162 @@ const Post = (props) => {
         bordered={false}
         style={{ marginTop: "20px" }}
       >
-        {
-          isLoaded(currentPost) && !isEmpty(currentPost) ? (
-            <Row>
-              {/* LIKES MODAL */}
-              <Modal
-                onCancel={() => {
-                  setLikesVisibility(false);
+        {isLoaded(currentPost) && !isEmpty(currentPost) ? (
+          <Row>
+            {/* LIKES MODAL */}
+            <Modal
+              onCancel={() => {
+                setLikesVisibility(false);
+              }}
+              footer={null}
+              title="Likes"
+              visible={likesVisibility}
+            >
+              <Likes postId={postId} />
+            </Modal>
+            {/* LEFT SIDE */}
+            <Col md={16} xs={24}>
+              <img
+                alt={currentPost.description}
+                src={currentPost.imageURL}
+                style={{
+                  objectFit: "contain",
+                  width: "100%",
+                  height: "100%",
                 }}
-                footer={null}
-                title="Likes"
-                visible={likesVisibility}
+              />
+            </Col>
+            {/* RIGHT SIDE */}
+            <Col md={8} xs={24}>
+              {/* POST DATA */}
+              <Row
+                justify="start"
+                style={{ marginTop: "10px", marginLeft: "10px" }}
               >
-                <Likes postId={postId} />
-              </Modal>
-              {/* LEFT SIDE */}
-              <Col md={16} xs={24}>
-                <img
-                  alt={currentPost.description}
-                  src={currentPost.imageURL}
-                  style={{
-                    objectFit: "contain",
-                    width: "100%",
-                    height: "100%",
-                  }}
+                <Avatar
+                  // style={{ display: "inline-block" }}
+                  size={40}
+                  src={currentPost.profilePicture}
                 />
-              </Col>
-              {/* RIGHT SIDE */}
-              <Col md={8} xs={24}>
-                {/* POST DATA */}
-                <Row
-                  justify="start"
-                  style={{ marginTop: "10px", marginLeft: "10px" }}
+                <Title
+                  level={4}
+                  strong
+                  style={{ marginLeft: "10px", display: "inline-block" }}
                 >
-                  <Avatar
-                    // style={{ display: "inline-block" }}
-                    size={40}
-                    src={currentPost.profilePicture}
-                  />
-                  <Title
-                    level={4}
-                    strong
-                    style={{ marginLeft: "10px", display: "inline-block" }}
-                  >
-                    {currentPost.userName} &nbsp;
-                  </Title>
+                  {currentPost.userName} &nbsp;
+                </Title>
 
-                  {currentPost.userId === auth.uid ? (
-                    <Button style={{ border: "none" }} onClick={deletePost}>
-                      <DeleteOutlined />
-                    </Button>
-                  ) : null}
-                </Row>
+                {currentPost.userId === auth.uid ? (
+                  <Button style={{ border: "none" }} onClick={deletePost}>
+                    <DeleteOutlined />
+                  </Button>
+                ) : null}
+              </Row>
 
-                {/* DESCRIPTION */}
-                <Row style={{ marginLeft: "10px" }}>
-                  {currentPost.userId === auth.uid ? (
-                    <Paragraph
-                      editable={{ onChange: onChange }}
-                      style={{
-                        marginTop: "20px",
-                        textAlign: "left",
-                        width: "100%",
-                        marginBottom: "20px",
-                      }}
-                    >
-                      {currentPost.description}
-                    </Paragraph>
-                  ) : null}
-                </Row>
-                {/* <Divider /> */}
-
-                {/* COMMENTS */}
-                {!isEmpty(comments) ? (
-                  <Row
+              {/* DESCRIPTION */}
+              <Row style={{ marginLeft: "10px" }}>
+                {currentPost.userId === auth.uid ? (
+                  <Paragraph
+                    editable={{ onChange: onChange }}
                     style={{
-                      height: `${270}px`,
-                      overflowY: "scroll",
-                      scrollbarWidth: "none",
-                      marginLeft: "10px",
+                      marginTop: "20px",
+                      textAlign: "left",
+                      width: "100%",
+                      marginBottom: "20px",
                     }}
                   >
-                    {isLoaded(comments) && !isEmpty(comments)
-                      ? Object.entries(comments).map((comment) => {
-                          return (
-                            <Comment
-                              style={{ paddingTop: "12px" }}
-                              // [0] -> doc id
-                              key={comment[0]}
-                              id={comment[0]}
-                              commentCount={currentPost.commentCount}
-                              // [1] -> doc data
-                              data={comment[1]}
-                            />
-                          );
-                        })
-                      : null}
-                  </Row>
-                ) : (
-                  <div style={{ height: "270px" }}></div>
-                )}
-                <Divider />
-
-                {/* STATISTICS */}
-                <Row align="middle">
-                  <Button style={{ border: "none" }} onClick={likePost}>
-                    {!isEmpty(checkLike) ? (
-                      <HeartFilled style={{ fontSize: "25px" }} />
-                    ) : (
-                      <HeartOutlined style={{ fontSize: "25px" }} />
-                    )}
-                  </Button>
-                  <Text onClick={() => setLikesVisibility(true)}>
-                    {currentPost.likeCount} Likes
-                  </Text>
-                  <Button style={{ border: "none" }}>
-                    <CommentOutlined
-                      style={{ fontSize: "25px", marginLeft: "20px" }}
-                    />
-                  </Button>
-                  <Text>{currentPost.commentCount} Comments</Text>
-                  <Text style={{ marginLeft: "20px" }} type="secondary">
-                    <Moment fromNow>{currentPost.timestamp}</Moment>
-                  </Text>
-                </Row>
-
-                {/* ADD COMMENT */}
-                <Divider />
-                {isLoaded(auth) && !isEmpty(auth) ? (
-                  <Row>
-                    <Form
-                      form={form}
-                      style={{ width: "95%" }}
-                      name="basic"
-                      onFinish={onFinishComment}
-                    >
-                      <Form.Item name="comment" rules={[{ required: false }]}>
-                        <Input
-                          bordered={false}
-                          placeholder="Add a comment…"
-                          suffix={
-                            <Button onClick={() => form.submit()}>
-                              <SendOutlined />
-                            </Button>
-                          }
-                        />
-                      </Form.Item>
-                    </Form>
-                  </Row>
+                    {currentPost.description}
+                  </Paragraph>
                 ) : null}
-              </Col>
-            </Row>
-          ) : null // display loading screen here
-        }
+              </Row>
+              {/* <Divider /> */}
+
+              {/* COMMENTS */}
+              {!isEmpty(comments) ? (
+                <Row
+                  style={{
+                    height: `${270}px`,
+                    overflowY: "scroll",
+                    scrollbarWidth: "none",
+                    marginLeft: "10px",
+                  }}
+                >
+                  {isLoaded(comments) && !isEmpty(comments)
+                    ? Object.entries(comments).map((comment) => {
+                        return (
+                          <Comment
+                            style={{ paddingTop: "12px" }}
+                            // [0] -> doc id
+                            key={comment[0]}
+                            id={comment[0]}
+                            commentCount={currentPost.commentCount}
+                            // [1] -> doc data
+                            data={comment[1]}
+                          />
+                        );
+                      })
+                    : null}
+                </Row>
+              ) : (
+                <div style={{ height: "270px" }}></div>
+              )}
+              <Divider />
+
+              {/* STATISTICS */}
+              <Row align="middle">
+                <Button style={{ border: "none" }} onClick={likePost}>
+                  {!isEmpty(checkLike) ? (
+                    <HeartFilled style={{ fontSize: "25px" }} />
+                  ) : (
+                    <HeartOutlined style={{ fontSize: "25px" }} />
+                  )}
+                </Button>
+                <Text onClick={() => setLikesVisibility(true)}>
+                  {currentPost.likeCount} Likes
+                </Text>
+                <Button style={{ border: "none" }}>
+                  <CommentOutlined
+                    style={{ fontSize: "25px", marginLeft: "20px" }}
+                  />
+                </Button>
+                <Text>{currentPost.commentCount} Comments</Text>
+                <Text style={{ marginLeft: "20px" }} type="secondary">
+                  <Moment fromNow>{currentPost.timestamp}</Moment>
+                </Text>
+              </Row>
+
+              {/* ADD COMMENT */}
+              <Divider />
+              {isLoaded(auth) && !isEmpty(auth) ? (
+                <Row>
+                  <Form
+                    form={form}
+                    style={{ width: "95%" }}
+                    name="basic"
+                    onFinish={onFinishComment}
+                  >
+                    <Form.Item name="comment" rules={[{ required: false }]}>
+                      <Input
+                        bordered={false}
+                        placeholder="Add a comment…"
+                        suffix={
+                          <Button onClick={() => form.submit()}>
+                            <SendOutlined />
+                          </Button>
+                        }
+                      />
+                    </Form.Item>
+                  </Form>
+                </Row>
+              ) : null}
+            </Col>
+          </Row>
+        ) : (
+          <Row justify="center">
+            <Skeleton.Image style={{ width: 600 }} />
+            <Skeleton avatar paragraph={{ rows: 4 }} />
+          </Row>
+        )}
       </Card>
     </Modal>
   );
