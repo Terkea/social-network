@@ -26,7 +26,7 @@ const CustomLayout = (props) => {
   const history = useHistory();
   const firestore = useFirestore();
   const auth = useSelector((state) => state.firebase.auth);
-  // const [counter, setCounter] = useState(0);
+  const [counter, setCounter] = useState(0);
   const notifications = useSelector(
     (state) => state.firestore.data.notifications
   );
@@ -45,21 +45,21 @@ const CustomLayout = (props) => {
     },
   ]);
 
-  var counter = 0;
+  // var counter = 0;
 
-  if (isLoaded(notifications) && !isEmpty(notifications)) {
-    Object.entries(notifications).forEach((notification) => {
-      if (notification[1].seen === false) {
-        try {
-          counter += 1;
-        } catch {
-          counter = 0;
+  useEffect(() => {
+    var i = 0;
+    if (isLoaded(notifications) && !isEmpty(notifications)) {
+      Object.entries(notifications).forEach((notification) => {
+        if (notification[1].seen === false) {
+          i += 1;
         }
-      }
-    });
-  }
+      });
+    }
+    setCounter(i);
+  }, [notifications]);
 
-  // console.log(counter);
+  console.log(counter);
 
   const readNotifications = () => {
     if (isLoaded(notifications) && !isEmpty(notifications)) {
@@ -111,6 +111,7 @@ const CustomLayout = (props) => {
                               size={20}
                               src={notification[1].photoURL || null}
                             />
+
                             <Text
                               style={{
                                 display: "inline-block",

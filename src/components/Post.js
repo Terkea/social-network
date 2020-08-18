@@ -8,6 +8,9 @@ import {
   Input,
   Button,
   Form,
+  Comment,
+  Tooltip,
+  List,
 } from "antd";
 import {
   HeartFilled,
@@ -25,7 +28,7 @@ import {
 import { useSelector } from "react-redux";
 import Modal from "antd/lib/modal/Modal";
 import Likes from "./Likes";
-import { useHistory } from "react-router-dom";
+import { useHistory, Link } from "react-router-dom";
 import Moment from "react-moment";
 
 const { Text, Paragraph } = Typography;
@@ -176,42 +179,48 @@ const Post = (props) => {
         <Text type="secondary">
           &nbsp; <Moment fromNow>{props.data.timestamp}</Moment>
         </Text>
-
         {props.data.userId === auth.uid ? (
           <Button style={{ border: "none" }} onClick={deletePost}>
             <DeleteOutlined />
           </Button>
         ) : null}
       </Row>
-      <Row>
-        {props.data.userId === auth.uid ? (
-          <Paragraph
-            editable={{ onChange: onChange }}
-            style={{
-              marginTop: "20px",
-              textAlign: "left",
-              width: "100%",
-              marginBottom: "20px",
-            }}
-          >
-            {props.data.description}
-          </Paragraph>
-        ) : (
-          <Paragraph
-            style={{
-              marginTop: "20px",
-              textAlign: "left",
-              width: "100%",
-              marginBottom: "20px",
-            }}
-          >
-            {props.data.description}
-          </Paragraph>
-        )}
-      </Row>
-      {/* STATISTICS */}
-      <Row align="middle">
-        <Button style={{ border: "none" }} onClick={likePost}>
+
+      {props.data.description === "" ? (
+        <Row>
+          {props.data.userId === auth.uid ? (
+            <Paragraph
+              editable={{ onChange: onChange }}
+              style={{
+                marginTop: "20px",
+                textAlign: "left",
+                width: "100%",
+                marginBottom: "20px",
+              }}
+            >
+              {props.data.description}
+            </Paragraph>
+          ) : (
+            <Paragraph
+              style={{
+                marginTop: "20px",
+                textAlign: "left",
+                width: "100%",
+                marginBottom: "20px",
+              }}
+            >
+              {props.data.description}
+            </Paragraph>
+          )}
+        </Row>
+      ) : null}
+
+      <Row align="middle" style={{ marginTop: "10px" }}>
+        {/* STATISTICS */}
+        <Button
+          style={{ border: "none", padding: "0 0 0 0", marginRight: "10px" }}
+          onClick={likePost}
+        >
           {!isEmpty(checkLike) ? (
             <HeartFilled style={{ fontSize: "25px" }} />
           ) : (
@@ -221,12 +230,39 @@ const Post = (props) => {
         <Text onClick={() => setLikesVisibility(true)}>
           {props.data.likeCount} Likes
         </Text>
-        <Button style={{ border: "none" }}>
+        <Button
+          style={{ border: "none", padding: "0 0 0 0", marginRight: "10px" }}
+        >
           <CommentOutlined style={{ fontSize: "25px", marginLeft: "20px" }} />
         </Button>
         <Text>{props.data.commentCount} Comments</Text>
       </Row>
-      <Divider />
+
+      {/* COMMENTS */}
+      <List className="comment-list" itemLayout="horizontal">
+        <Comment
+          // actions={actions}
+          author={<Link to="test">Han Solo</Link>}
+          avatar={
+            <Avatar
+              src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+              alt="Han Solo"
+            />
+          }
+          content={
+            <Text>
+              We supply a series of design principles, practical patterns and
+              high quality design
+            </Text>
+          }
+          datetime={
+            <Tooltip title={<Moment fromNow>{props.data.timestamp}</Moment>}>
+              <Moment fromNow>{props.data.timestamp}</Moment>
+            </Tooltip>
+          }
+        />
+      </List>
+
       {/* WRITE COMMENT */}
       {isLoaded(auth) && !isEmpty(auth) ? (
         <Row>

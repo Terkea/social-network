@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import {
   Card,
   Avatar,
@@ -9,8 +9,9 @@ import {
   Button,
   Form,
   Col,
-  Space,
+  List,
   Skeleton,
+  Tooltip,
 } from "antd";
 import {
   HeartFilled,
@@ -30,7 +31,6 @@ import { useSelector } from "react-redux";
 import Modal from "antd/lib/modal/Modal";
 import Likes from "./Likes";
 import Moment from "react-moment";
-
 const { Title, Text, Paragraph } = Typography;
 
 const Post = (props) => {
@@ -71,6 +71,7 @@ const Post = (props) => {
       // queryParams: ["orderByChild=createdAt"],
     },
   ]);
+
   // check if the post is liked or not
   // act accordingly
   // TODO add notification to the post owner
@@ -123,10 +124,7 @@ const Post = (props) => {
   };
 
   const onChange = (str) => {
-    firestore
-      .collection("posts")
-      .doc(props.data.id)
-      .update({ description: str });
+    firestore.collection("posts").doc(postId).update({ description: str });
   };
 
   const deletePost = () => {
@@ -180,7 +178,7 @@ const Post = (props) => {
       visible={profileModalVisibility}
     >
       <Card
-        bodyStyle={{ border: "none", padding: 0 }}
+        bodyStyle={{ border: "none", padding: 0, maxHeight: "600px" }}
         hoverable
         bordered={false}
         style={{ marginTop: "20px" }}
@@ -214,21 +212,15 @@ const Post = (props) => {
             <Col md={8} xs={24}>
               {/* POST DATA */}
               <Row
+                align="middle"
                 justify="start"
                 style={{ marginTop: "10px", marginLeft: "10px" }}
               >
-                <Avatar
-                  // style={{ display: "inline-block" }}
-                  size={40}
-                  src={currentPost.profilePicture}
-                />
-                <Title
-                  level={4}
-                  strong
-                  style={{ marginLeft: "10px", display: "inline-block" }}
-                >
-                  {currentPost.userName} &nbsp;
-                </Title>
+                <Avatar size={40} src={currentPost.profilePicture} />
+                <Text strong>&nbsp;&nbsp;{currentPost.userName}</Text>
+                <Text type="secondary">
+                  &nbsp; <Moment fromNow>{currentPost.timestamp}</Moment>
+                </Text>
 
                 {currentPost.userId === auth.uid ? (
                   <Button style={{ border: "none" }} onClick={deletePost}>
@@ -238,28 +230,46 @@ const Post = (props) => {
               </Row>
 
               {/* DESCRIPTION */}
-              <Row style={{ marginLeft: "10px" }}>
-                {currentPost.userId === auth.uid ? (
-                  <Paragraph
-                    editable={{ onChange: onChange }}
-                    style={{
-                      marginTop: "20px",
-                      textAlign: "left",
-                      width: "100%",
-                      marginBottom: "20px",
-                    }}
-                  >
-                    {currentPost.description}
-                  </Paragraph>
-                ) : null}
-              </Row>
-              {/* <Divider /> */}
+
+              {currentPost.userId === auth.uid ? (
+                <Paragraph
+                  id="descriptionDiv"
+                  editable={{ onChange: onChange }}
+                  style={{
+                    marginTop: "10px",
+                    textAlign: "left",
+                    marginLeft: "10px",
+                    width: "90%",
+                  }}
+                >
+                  {currentPost.description}
+                </Paragraph>
+              ) : (
+                <Paragraph
+                  id="descriptionDiv"
+                  style={{
+                    marginTop: "10px",
+                    textAlign: "left",
+                    marginLeft: "10px",
+                    width: "90%",
+                  }}
+                >
+                  {currentPost.description}
+                </Paragraph>
+              )}
+
+              <Divider style={{ margin: "0 0 0 0" }} />
 
               {/* COMMENTS */}
+
               {!isEmpty(comments) ? (
                 <Row
                   style={{
-                    height: `${270}px`,
+                    height: `${
+                      400 -
+                        document.getElementById("descriptionDiv")
+                          .clientHeight || 0
+                    }px`,
                     overflowY: "scroll",
                     scrollbarWidth: "none",
                     marginLeft: "10px",
@@ -284,7 +294,7 @@ const Post = (props) => {
               ) : (
                 <div style={{ height: "270px" }}></div>
               )}
-              <Divider />
+              <Divider style={{ margin: "10px 10px 10px 10px" }} />
 
               {/* STATISTICS */}
               <Row align="middle">
@@ -304,15 +314,12 @@ const Post = (props) => {
                   />
                 </Button>
                 <Text>{currentPost.commentCount} Comments</Text>
-                <Text style={{ marginLeft: "20px" }} type="secondary">
-                  <Moment fromNow>{currentPost.timestamp}</Moment>
-                </Text>
               </Row>
 
               {/* ADD COMMENT */}
-              <Divider />
+              {/* <Divider /> */}
               {isLoaded(auth) && !isEmpty(auth) ? (
-                <Row>
+                <Row style={{ marginTop: "8px" }}>
                   <Form
                     form={form}
                     style={{ width: "95%" }}
