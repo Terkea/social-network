@@ -11,8 +11,9 @@ import {
 
 import SvgBackground from "../containers/SvgBackground";
 import { runNotifications } from "../helpers/Notification";
-import { useFirebase } from "react-redux-firebase";
+import { useFirebase, isLoaded } from "react-redux-firebase";
 import { connect, useSelector } from "react-redux";
+import { firestore } from "firebase";
 
 const { Title } = Typography;
 
@@ -35,6 +36,7 @@ const Register = (props) => {
   const history = useHistory();
   const firebase = useFirebase();
   const auth = useSelector((state) => state.firebase.auth);
+
   useEffect(() => {
     if (props.authError) {
       runNotifications(props.authError.message, "ERROR");
@@ -60,6 +62,7 @@ const Register = (props) => {
     label: website,
     value: website,
   }));
+
   const onFinish = (values) => {
     firebase
       .createUser(
@@ -71,7 +74,6 @@ const Register = (props) => {
           username: values.username,
           email: values.email,
           createdAt: new Date().toISOString(),
-          uid: auth.uid || "",
           photoURL: "",
           bio: "",
           location: "",

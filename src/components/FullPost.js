@@ -254,7 +254,7 @@ const Post = (props) => {
               {!isEmpty(comments) ? (
                 <Row
                   style={{
-                    height: `${420 - height}px`,
+                    height: `${390 - height}px`,
                     overflowY: "scroll",
                     scrollbarWidth: "none",
                     marginLeft: "10px",

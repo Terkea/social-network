@@ -161,7 +161,10 @@ const Post = (props) => {
       </Modal>
 
       {/* USER DATA */}
-      <Row align="middle">
+      <Row
+        align="middle"
+        onClick={() => history.push(`/u/${props.data.userId}`)}
+      >
         <Avatar size={40} src={props.data.profilePicture} />
         <Text strong>&nbsp;&nbsp;{props.data.userName}</Text>
         <Text type="secondary">
@@ -201,10 +204,15 @@ const Post = (props) => {
         <Text onClick={() => setLikesVisibility(true)}>
           {props.data.likeCount} Likes
         </Text>
-        <Button style={styles.statsButton}>
+        <Button
+          style={styles.statsButton}
+          onClick={() => history.push(`/p/${props.data.id}`)}
+        >
           <CommentOutlined style={styles.commentButton} />
         </Button>
-        <Text>{props.data.commentCount} Comments</Text>
+        <Text onClick={() => history.push(`/p/${props.data.id}`)}>
+          {props.data.commentCount} Comments
+        </Text>
       </Row>
 
       {/* WRITE COMMENT */}
