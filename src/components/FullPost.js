@@ -226,7 +226,7 @@ const Post = (props) => {
                 </Text>
 
                 {currentPost.userId === auth.uid ? (
-                  <Button style={styles.deleteButton} onClick={deletePost}>
+                  <Button style={styles.borderlessButton} onClick={deletePost}>
                     <DeleteOutlined />
                   </Button>
                 ) : null}
