@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Card,
   Avatar,
@@ -9,9 +9,7 @@ import {
   Button,
   Form,
   Col,
-  List,
   Skeleton,
-  Tooltip,
 } from "antd";
 import {
   HeartFilled,
@@ -31,7 +29,7 @@ import { useSelector } from "react-redux";
 import Modal from "antd/lib/modal/Modal";
 import Likes from "./Likes";
 import Moment from "react-moment";
-const { Title, Text, Paragraph } = Typography;
+const { Text, Paragraph } = Typography;
 
 const Post = (props) => {
   const { postId } = props.match.params;
@@ -51,6 +49,19 @@ const Post = (props) => {
   // MODALS HOOK
   const [likesVisibility, setLikesVisibility] = useState(false);
   const [profileModalVisibility, setProfileModalVisibility] = useState(true);
+
+  // THE SIZE OF THE COMMENTS ROW DEPENDS ON THE HEIGHT OF THE DESCRIPTION
+  // TO FIT RIGHT IN AND SCALE DYNAMICALLY BASED ON THE HEIGHT OF THE DESCRIPTION
+  // WE HAVE TO GET THE DIV HEIGHT VALUE
+  const ref = useRef();
+  const [height, setHeight] = useState(0);
+  useEffect(() => {
+    try {
+      setHeight(ref.current.clientHeight);
+    } catch {}
+  });
+
+  console.log(height);
   useFirestoreConnect([
     {
       collection: "likes",
@@ -178,10 +189,10 @@ const Post = (props) => {
       visible={profileModalVisibility}
     >
       <Card
-        bodyStyle={{ border: "none", padding: 0, maxHeight: "600px" }}
+        bodyStyle={styles.cardBody}
         hoverable
         bordered={false}
-        style={{ marginTop: "20px" }}
+        style={styles.card}
       >
         {isLoaded(currentPost) && !isEmpty(currentPost) ? (
           <Row>
@@ -201,21 +212,13 @@ const Post = (props) => {
               <img
                 alt={currentPost.description}
                 src={currentPost.imageURL}
-                style={{
-                  objectFit: "contain",
-                  width: "100%",
-                  height: "100%",
-                }}
+                style={styles.postImage}
               />
             </Col>
             {/* RIGHT SIDE */}
             <Col md={8} xs={24}>
               {/* POST DATA */}
-              <Row
-                align="middle"
-                justify="start"
-                style={{ marginTop: "10px", marginLeft: "10px" }}
-              >
+              <Row align="middle" justify="start" style={styles.postData}>
                 <Avatar size={40} src={currentPost.profilePicture} />
                 <Text strong>&nbsp;&nbsp;{currentPost.userName}</Text>
                 <Text type="secondary">
@@ -223,7 +226,7 @@ const Post = (props) => {
                 </Text>
 
                 {currentPost.userId === auth.uid ? (
-                  <Button style={{ border: "none" }} onClick={deletePost}>
+                  <Button style={styles.deleteButton} onClick={deletePost}>
                     <DeleteOutlined />
                   </Button>
                 ) : null}
@@ -231,45 +234,27 @@ const Post = (props) => {
 
               {/* DESCRIPTION */}
 
-              {currentPost.userId === auth.uid ? (
-                <Paragraph
-                  id="descriptionDiv"
-                  editable={{ onChange: onChange }}
-                  style={{
-                    marginTop: "10px",
-                    textAlign: "left",
-                    marginLeft: "10px",
-                    width: "90%",
-                  }}
-                >
-                  {currentPost.description}
-                </Paragraph>
-              ) : (
-                <Paragraph
-                  id="descriptionDiv"
-                  style={{
-                    marginTop: "10px",
-                    textAlign: "left",
-                    marginLeft: "10px",
-                    width: "90%",
-                  }}
-                >
-                  {currentPost.description}
-                </Paragraph>
-              )}
-
-              <Divider style={{ margin: "0 0 0 0" }} />
+              <Row ref={ref}>
+                {currentPost.userId === auth.uid ? (
+                  <Paragraph
+                    editable={{ onChange: onChange }}
+                    style={styles.description}
+                  >
+                    {currentPost.description}
+                  </Paragraph>
+                ) : (
+                  <Paragraph style={styles.description}>
+                    {currentPost.description}
+                  </Paragraph>
+                )}
+              </Row>
+              <Divider style={styles.dividerBelowDescription} />
 
               {/* COMMENTS */}
-
               {!isEmpty(comments) ? (
                 <Row
                   style={{
-                    height: `${
-                      400 -
-                        document.getElementById("descriptionDiv")
-                          .clientHeight || 0
-                    }px`,
+                    height: `${420 - height}px`,
                     overflowY: "scroll",
                     scrollbarWidth: "none",
                     marginLeft: "10px",
@@ -279,7 +264,7 @@ const Post = (props) => {
                     ? Object.entries(comments).map((comment) => {
                         return (
                           <Comment
-                            style={{ paddingTop: "12px" }}
+                            style={styles.comment}
                             // [0] -> doc id
                             key={comment[0]}
                             id={comment[0]}
@@ -292,37 +277,35 @@ const Post = (props) => {
                     : null}
                 </Row>
               ) : (
-                <div style={{ height: "270px" }}></div>
+                <div style={styles.placeholderComments}></div>
               )}
-              <Divider style={{ margin: "10px 10px 10px 10px" }} />
+
+              <Divider style={styles.dividerBelowComments} />
 
               {/* STATISTICS */}
               <Row align="middle">
-                <Button style={{ border: "none" }} onClick={likePost}>
+                <Button style={styles.borderlessButton} onClick={likePost}>
                   {!isEmpty(checkLike) ? (
-                    <HeartFilled style={{ fontSize: "25px" }} />
+                    <HeartFilled style={styles.likeButton} />
                   ) : (
-                    <HeartOutlined style={{ fontSize: "25px" }} />
+                    <HeartOutlined style={styles.likeButton} />
                   )}
                 </Button>
                 <Text onClick={() => setLikesVisibility(true)}>
                   {currentPost.likeCount} Likes
                 </Text>
-                <Button style={{ border: "none" }}>
-                  <CommentOutlined
-                    style={{ fontSize: "25px", marginLeft: "20px" }}
-                  />
+                <Button style={styles.borderlessButton}>
+                  <CommentOutlined style={styles.commentsButton} />
                 </Button>
                 <Text>{currentPost.commentCount} Comments</Text>
               </Row>
 
               {/* ADD COMMENT */}
-              {/* <Divider /> */}
               {isLoaded(auth) && !isEmpty(auth) ? (
-                <Row style={{ marginTop: "8px" }}>
+                <Row style={styles.inputRow}>
                   <Form
                     form={form}
-                    style={{ width: "95%" }}
+                    style={styles.inputForm}
                     name="basic"
                     onFinish={onFinishComment}
                   >
@@ -351,6 +334,32 @@ const Post = (props) => {
       </Card>
     </Modal>
   );
+};
+
+const styles = {
+  cardBody: { border: "none", padding: 0, maxHeight: "600px" },
+  card: { marginTop: "20px" },
+  postImage: {
+    objectFit: "contain",
+    width: "100%",
+    height: "100%",
+  },
+  postData: { marginTop: "10px", marginLeft: "10px" },
+  borderlessButton: { border: "none" },
+  description: {
+    marginTop: "10px",
+    textAlign: "left",
+    marginLeft: "10px",
+    width: "90%",
+  },
+  dividerBelowDescription: { margin: "0 0 0 0" },
+  dividerBelowComments: { margin: "10px 10px 10px 10px" },
+  comment: { paddingTop: "12px" },
+  placeholderComments: { height: "270px" },
+  likeButton: { fontSize: "25px" },
+  commentsButton: { fontSize: "25px", marginLeft: "20px" },
+  inputRow: { marginTop: "8px" },
+  inputForm: { width: "95%" },
 };
 
 export default Post;

@@ -1,10 +1,11 @@
 import React from "react";
-import { Row, Col, Avatar, Space, Typography, Button } from "antd";
+import { Row, Col, Avatar, Typography, Button } from "antd";
 import { useSelector } from "react-redux";
 import { DeleteOutlined } from "@ant-design/icons";
-import { useFirestore, isLoaded, isEmpty } from "react-redux-firebase";
+import { useFirestore, isEmpty } from "react-redux-firebase";
 import Moment from "react-moment";
 import { useHistory } from "react-router-dom";
+
 const Comment = (props) => {
   const { Text } = Typography;
   const auth = useSelector((state) => state.firebase.auth);

@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Layout,
-  Menu,
-  message,
-  Dropdown,
-  Badge,
-  notification,
-  Typography,
-} from "antd";
+import { Layout, Menu, Dropdown, Badge, notification, Typography } from "antd";
 import { Link, useHistory } from "react-router-dom";
 import {
   isEmpty,
@@ -16,9 +8,10 @@ import {
   useFirestore,
 } from "react-redux-firebase";
 import { useSelector } from "react-redux";
-import { HomeOutlined, BellOutlined, DownOutlined } from "@ant-design/icons";
+import { HomeOutlined, BellOutlined } from "@ant-design/icons";
 import Avatar from "antd/lib/avatar/avatar";
 import Moment from "react-moment";
+
 const { Header, Content, Footer } = Layout;
 
 const CustomLayout = (props) => {
@@ -58,8 +51,6 @@ const CustomLayout = (props) => {
     }
     setCounter(i);
   }, [notifications]);
-
-  console.log(counter);
 
   const readNotifications = () => {
     if (isLoaded(notifications) && !isEmpty(notifications)) {
@@ -144,7 +135,7 @@ const CustomLayout = (props) => {
                 <a
                   className="ant-dropdown-link"
                   onClick={(e) => e.preventDefault()}
-                ></a>
+                />
               </Dropdown>
             </Menu.Item>
           ) : null}

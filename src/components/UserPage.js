@@ -1,17 +1,14 @@
 import React from "react";
 
 import { Row, Col } from "antd";
-import MyProfile from "./MyProfile";
 import Post from "./Post";
 
 import {
   isEmpty,
   useFirestoreConnect,
-  firestoreConnect,
   isLoaded,
 } from "react-redux-firebase";
-import { useSelector, connect } from "react-redux";
-import { compose } from "redux";
+import { useSelector } from "react-redux";
 import UserProfile from "./UserProfile";
 
 const UserPage = (props) => {

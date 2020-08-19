@@ -1,17 +1,5 @@
 import React, { useState } from "react";
-import {
-  Card,
-  Avatar,
-  Row,
-  Typography,
-  Divider,
-  Input,
-  Button,
-  Form,
-  Comment,
-  Tooltip,
-  List,
-} from "antd";
+import { Card, Avatar, Row, Typography, Input, Button, Form } from "antd";
 import {
   HeartFilled,
   HeartOutlined,
@@ -28,7 +16,7 @@ import {
 import { useSelector } from "react-redux";
 import Modal from "antd/lib/modal/Modal";
 import Likes from "./Likes";
-import { useHistory, Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import Moment from "react-moment";
 
 const { Text, Paragraph } = Typography;
@@ -151,7 +139,7 @@ const Post = (props) => {
   return (
     <Card
       hoverable
-      style={{ maxWidth: 614, marginTop: "20px" }}
+      style={styles.card}
       cover={
         <img
           alt="example"
@@ -180,95 +168,51 @@ const Post = (props) => {
           &nbsp; <Moment fromNow>{props.data.timestamp}</Moment>
         </Text>
         {props.data.userId === auth.uid ? (
-          <Button style={{ border: "none" }} onClick={deletePost}>
+          <Button style={styles.deleteButton} onClick={deletePost}>
             <DeleteOutlined />
           </Button>
         ) : null}
       </Row>
 
-      {props.data.description === "" ? (
-        <Row>
-          {props.data.userId === auth.uid ? (
-            <Paragraph
-              editable={{ onChange: onChange }}
-              style={{
-                marginTop: "20px",
-                textAlign: "left",
-                width: "100%",
-                marginBottom: "20px",
-              }}
-            >
-              {props.data.description}
-            </Paragraph>
-          ) : (
-            <Paragraph
-              style={{
-                marginTop: "20px",
-                textAlign: "left",
-                width: "100%",
-                marginBottom: "20px",
-              }}
-            >
-              {props.data.description}
-            </Paragraph>
-          )}
-        </Row>
-      ) : null}
+      <Row>
+        {props.data.userId === auth.uid ? (
+          <Paragraph
+            editable={{ onChange: onChange }}
+            style={styles.description}
+          >
+            {props.data.description}
+          </Paragraph>
+        ) : (
+          <Paragraph style={styles.description}>
+            {props.data.description}
+          </Paragraph>
+        )}
+      </Row>
 
-      <Row align="middle" style={{ marginTop: "10px" }}>
+      <Row align="middle" style={styles.statisticsRow}>
         {/* STATISTICS */}
-        <Button
-          style={{ border: "none", padding: "0 0 0 0", marginRight: "10px" }}
-          onClick={likePost}
-        >
+        <Button style={styles.statsButton} onClick={likePost}>
           {!isEmpty(checkLike) ? (
-            <HeartFilled style={{ fontSize: "25px" }} />
+            <HeartFilled style={styles.likeButton} />
           ) : (
-            <HeartOutlined style={{ fontSize: "25px" }} />
+            <HeartOutlined style={styles.likeButton} />
           )}
         </Button>
         <Text onClick={() => setLikesVisibility(true)}>
           {props.data.likeCount} Likes
         </Text>
-        <Button
-          style={{ border: "none", padding: "0 0 0 0", marginRight: "10px" }}
-        >
-          <CommentOutlined style={{ fontSize: "25px", marginLeft: "20px" }} />
+        <Button style={styles.statsButton}>
+          <CommentOutlined style={styles.commentButton} />
         </Button>
         <Text>{props.data.commentCount} Comments</Text>
       </Row>
-
-      {/* COMMENTS */}
-      <List className="comment-list" itemLayout="horizontal">
-        <Comment
-          // actions={actions}
-          author={<Link to="test">Han Solo</Link>}
-          avatar={
-            <Avatar
-              src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-              alt="Han Solo"
-            />
-          }
-          content={
-            <Text>
-              We supply a series of design principles, practical patterns and
-              high quality design
-            </Text>
-          }
-          datetime={
-            <Tooltip title={<Moment fromNow>{props.data.timestamp}</Moment>}>
-              <Moment fromNow>{props.data.timestamp}</Moment>
-            </Tooltip>
-          }
-        />
-      </List>
 
       {/* WRITE COMMENT */}
       {isLoaded(auth) && !isEmpty(auth) ? (
         <Row>
           <Form
             form={form}
-            style={{ width: "100%" }}
+            style={styles.commentInput}
             name="basic"
             onFinish={onFinishComment}
           >
@@ -288,6 +232,22 @@ const Post = (props) => {
       ) : null}
     </Card>
   );
+};
+
+const styles = {
+  card: { maxWidth: 614, marginTop: "20px" },
+  statsButton: { border: "none", padding: "0 0 0 0", marginRight: "10px" },
+  commentButton: { fontSize: "25px", marginLeft: "20px" },
+  likeButton: { fontSize: "25px" },
+  commentInput: { width: "100%", marginTop: "20px" },
+  statisticsRow: { marginTop: "10px" },
+  deleteButton: { border: "none" },
+  description: {
+    marginTop: "10px",
+    textAlign: "left",
+    width: "100%",
+    marginBottom: "10px",
+  },
 };
 
 export default Post;

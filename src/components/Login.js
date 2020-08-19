@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {  useHistory, Link } from "react-router-dom";
+import { useHistory, Link } from "react-router-dom";
 
 import {
   Row,
@@ -95,7 +95,6 @@ const Login = (props) => {
         onOk={onOkModal}
         onCancel={() => {
           setModalVisibility(false);
-          console.log("Something is fucked");
         }}
       >
         <LockOutlined style={styles.logo} />

@@ -207,18 +207,10 @@ const MyProfile = (props) => {
               icon={<UserOutlined />}
             />
           </Row>
-          <Row style={{ marginTop: "20px" }} align="center">
+          <Row style={styles.UploadProfilePictureRow} align="center">
             <UploadProfilePicture />
           </Row>
-          <Title
-            style={{
-              marginBottom: "30px",
-              marginTop: "30px",
-              maxHeight: "20px",
-            }}
-            align="center"
-            level={4}
-          ></Title>
+          <Title style={styles.title} align="center" level={4}></Title>
           <Row>
             <Col span={24}>
               <Title strong align="center" level={4}>
@@ -267,5 +259,14 @@ const enhance = connect(
     authError,
   })
 );
+
+const styles = {
+  UploadProfilePictureRow: { marginTop: "20px" },
+  title: {
+    marginBottom: "30px",
+    marginTop: "30px",
+    maxHeight: "20px",
+  },
+};
 
 export default enhance(MyProfile);

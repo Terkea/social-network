@@ -1,25 +1,17 @@
 import React from "react";
 
-import { Row, Col, Card, Skeleton } from "antd";
+import { Row, Col, Skeleton } from "antd";
 import MyProfile from "./MyProfile";
 import Post from "./Post";
 
-import {
-  isEmpty,
-  useFirestoreConnect,
-  firestoreConnect,
-  isLoaded,
-} from "react-redux-firebase";
-import { useSelector, connect } from "react-redux";
-import { compose } from "redux";
+import { isEmpty, useFirestoreConnect, isLoaded } from "react-redux-firebase";
+import { useSelector } from "react-redux";
 import CreatePost from "./CreatePost";
 
 const Home = (props) => {
   const auth = useSelector((state) => state.firebase.auth);
 
-  useFirestoreConnect([
-    { collection: "posts" }, // or 'todos'
-  ]);
+  useFirestoreConnect([{ collection: "posts" }]);
   const posts = useSelector((state) => state.firestore.ordered.posts);
 
   return (
