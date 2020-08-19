@@ -27,8 +27,9 @@ const Post = (props) => {
   const firestore = useFirestore();
   const auth = useSelector((state) => state.firebase.auth);
   const profile = useSelector((state) => state.firebase.profile);
-  const checkLike = useSelector((state) => state.firestore.data.checkLike);
+  const checkLike = useSelector((state) => state.firestore.data.likes);
   const [likesVisibility, setLikesVisibility] = useState(false);
+  // like bug
   useFirestoreConnect([
     {
       collection: "likes",
@@ -36,7 +37,7 @@ const Post = (props) => {
         ["postId", "==", props.data.id],
         ["userId", "==", auth.uid || null],
       ],
-      storeAs: `checkLike`,
+      //   storeAs: `checkLike${props.postId}`,
     },
   ]);
 
@@ -192,9 +193,9 @@ const Post = (props) => {
         )}
       </Row>
 
-      <Row align="middle" style={styles.statisticsRow}>
+      <Row key={props.data.id} align="middle" style={styles.statisticsRow}>
         {/* STATISTICS */}
-        <Button style={styles.statsButton} onClick={likePost}>
+        <Button style={styles.statsButton} onClick={() => likePost()}>
           {!isEmpty(checkLike) ? (
             <HeartFilled style={styles.likeButton} />
           ) : (

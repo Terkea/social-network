@@ -61,7 +61,6 @@ const Post = (props) => {
     } catch {}
   });
 
-  console.log(height);
   useFirestoreConnect([
     {
       collection: "likes",

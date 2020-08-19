@@ -84,7 +84,7 @@ const CustomLayout = (props) => {
               }
             >
               <Dropdown
-                onClick={readNotifications}
+                // onClick={readNotifications}
                 overlay={
                   <Menu>
                     {isLoaded(notifications) && !isEmpty(notifications) ? (
@@ -100,7 +100,7 @@ const CustomLayout = (props) => {
                             <Avatar
                               style={{ display: "inline-block" }}
                               size={20}
-                              src={notification[1].photoURL || null}
+                              src={notification[1].photoURL || ""}
                             />
 
                             <Text
